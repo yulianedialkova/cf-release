@@ -58,7 +58,7 @@ case $1 in
     echo $$ > $PIDFILE
 
     <% if properties.syslog_aggregator %>
-    /var/vcap/packages/syslog_aggregator/setup_syslog_forwarder.sh $JOB_DIR/config
+#    /var/vcap/packages/syslog_aggregator/setup_syslog_forwarder.sh $JOB_DIR/config
     <% end %>
 
     # Generate a random usernames and passwords
