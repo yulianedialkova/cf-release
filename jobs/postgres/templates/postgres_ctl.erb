@@ -42,8 +42,7 @@ case "$1" in
 
     if [ ! -d $STORE_DIR ]; then
       echo "ERROR: storage directory doesn't exist"
-      echo "Please add persistent disk to this job"
-      exit 1
+      mkdir STORE_DIR 
     fi
 
     if [ ! -d $LOG_DIR ]; then
