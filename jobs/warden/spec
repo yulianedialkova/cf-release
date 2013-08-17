@@ -1,0 +1,35 @@
+---
+name: warden
+templates:
+  syslog_forwarder.conf.erb: config/syslog_forwarder.conf
+
+  warden_ctl: bin/warden_ctl
+  warden.yml.erb: config/warden.yml
+
+packages:
+- common
+- warden
+- rootfs_lucid64
+- ruby
+- syslog_aggregator
+properties:
+  domain:
+    description: "DNS domain name for this Cloud Foundry deployment"
+  nats.address:
+    description: "IP address of NATS server"
+  nats.password:
+    description: "password for NATS login"
+  nats.port:
+    description: "TCP port of NATS server"
+  nats.user:
+    description: "user name for NATS login"
+  warden.allow_networks:
+    description:
+  warden.deny_networks:
+    description:
+  kernel_network_tuning_enabled:
+    description: "with latest kernel version, no kernel network tunings allowed with in warden cpi containers"
+    default: true
+  disk_quota_enabled:
+    description: "disk quota must be disabled to use warden-inside-warden with the warden cpi"
+    default: true

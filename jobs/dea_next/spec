@@ -8,16 +8,11 @@ templates:
 
   platform.yml: config/platform.yml
 
-  warden_ctl: bin/warden_ctl
-  warden.yml.erb: config/warden.yml
-
   dir_server_ctl: bin/dir_server_ctl
 
 packages:
 - common
 - dea_next
-- warden
-- rootfs_lucid64
 - ruby
 - golang
 - sqlite
@@ -39,10 +34,6 @@ properties:
     description: "TCP port of NATS server"
   nats.user:
     description: "user name for NATS login"
-  dea_next.allow_networks:
-    description: 
-  dea_next.deny_networks:
-    description:
   dea_next.disk_mb:
     description:
     default: 32000
@@ -68,11 +59,8 @@ properties:
   dea_next.streaming_timeout:
     description:
     default: 60
-  dea_next.kernel_network_tuning_enabled:
+  kernel_network_tuning_enabled:
     description: "with latest kernel version, no kernel network tunings allowed with in warden cpi containers"
-    default: true
-  disk_quota_enabled:
-    description: "disk quota must be disabled to use warden-inside-warden with the warden cpi"
     default: true
   syslog_aggregator:
     description: "Syslog aggregator stuff"

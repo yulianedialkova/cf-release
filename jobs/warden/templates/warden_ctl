@@ -2,7 +2,7 @@
 
 RUN_DIR=/var/vcap/sys/run/warden
 LOG_DIR=/var/vcap/sys/log/warden
-WARDEN_CONF_DIR=/var/vcap/jobs/dea_next/config
+WARDEN_CONF_DIR=/var/vcap/jobs/warden/config
 FIRSTRUN_PATH=$RUN_DIR/firstrun
 PIDFILE=$RUN_DIR/warden.pid
 DATA_DIR=/var/vcap/data/warden
@@ -24,7 +24,7 @@ case $1 in
 
     ulimit -c unlimited
 
-    <% if p("dea_next.kernel_network_tuning_enabled") == true %>
+    <% if p("kernel_network_tuning_enabled") == true %>
     # Use default local port range (higher ports are used for pooling)
     echo 32768 61000 > /proc/sys/net/ipv4/ip_local_port_range
     <% end %>

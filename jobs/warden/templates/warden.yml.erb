@@ -21,17 +21,17 @@ health_check_server:
 network:
   pool_start_address: 10.254.0.0
   pool_size: 256
-  <% if properties.dea_next && properties.dea_next.deny_networks %>
-  deny_networks: <%= properties.dea_next.deny_networks %>
+  <% if properties.warden && properties.warden.deny_networks %>
+  deny_networks: <%= properties.warden.deny_networks %>
   <% end %>
-  <% if properties.dea_next && properties.dea_next.allow_networks %>
-  allow_networks: <%= properties.dea_next.allow_networks %>
+  <% if properties.warden && properties.warden.allow_networks %>
+  allow_networks: <%= properties.warden.allow_networks %>
   <%end %>
 
   # Interface MTU size
   # (for OpenStack use 1454 to avoid problems with rubygems with GRE tunneling)
-  <% if properties.dea_next && properties.dea_next.mtu %>
-  mtu: <%= properties.dea_next.mtu %>
+  <% if properties.warden && properties.warden.mtu %>
+  mtu: <%= properties.warden.mtu %>
   <%else%>
   mtu: 1500
   <%end %>
