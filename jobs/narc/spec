@@ -19,6 +19,7 @@ packages:
 - mysqlclient
 - libpq
 - insight_agent
+- container_tools
 
 properties:
   domain:

@@ -1,0 +1,11 @@
+---
+name: container_tools
+dependencies:
+- ruby
+- warden
+files:
+- container_tools/Gemfile
+- container_tools/Gemfile.lock
+- container_tools/container_tools.gemspec
+- container_tools/{bin,lib,vendor}/**/*
+- pkg_utils/*
