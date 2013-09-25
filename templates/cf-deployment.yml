@@ -12,7 +12,7 @@ properties: (( merge ))
 
 meta:
   stemcell:
-    name: bosh-stemcell
+    name: bosh-aws-xen-ubuntu
     version: latest
 
 compilation:
