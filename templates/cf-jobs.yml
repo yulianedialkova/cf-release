@@ -29,6 +29,7 @@ meta:
 
 jobs:
   - name: nats_z2
+    release: cf
     template: nats
     instances: 1
     resource_pool: medium_z2
@@ -40,6 +41,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z2 ))
 
   - name: logs_z1
+    release: cf
     template: syslog_aggregator
     instances: 1
     resource_pool: medium_z1
@@ -52,6 +54,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z1 ))
 
   - name: logs_z2
+    release: cf
     template: syslog_aggregator
     instances: 1
     resource_pool: medium_z2
@@ -64,6 +67,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z2 ))
 
   - name: stats_z1
+    release: cf
     template: collector
     instances: 1
     resource_pool: small_z1
@@ -74,6 +78,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z1 ))
 
   - name: nfs_z1
+    release: cf
     template: debian_nfs_server
     instances: 0
     resource_pool: medium_z1
@@ -83,6 +88,7 @@ jobs:
         static_ips: ~
 
   - name: postgres_z1
+    release: cf
     template: postgres
     instances: 0
     resource_pool: large_z1
@@ -94,6 +100,7 @@ jobs:
       db: databases
 
   - name: uaa_z1
+    release: cf
     template: uaa
     instances: 1
     resource_pool: large_z1
@@ -104,6 +111,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z1 ))
 
   - name: uaa_z2
+    release: cf
     template: uaa
     instances: 1
     resource_pool: large_z2
@@ -114,6 +122,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z2 ))
 
   - name: login_z1
+    release: cf
     template: login
     instances: 1
     resource_pool: medium_z1
@@ -124,6 +133,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z1 ))
 
   - name: api_z1
+    release: cf
     template: cloud_controller_ng
     instances: 1
     resource_pool: large_z1
@@ -138,6 +148,7 @@ jobs:
         trafficcontroller: (( meta.loggregator.z1.trafficcontroller ))
 
   - name: api_z2
+    release: cf
     template: cloud_controller_ng
     instances: 1
     resource_pool: large_z2
@@ -152,6 +163,7 @@ jobs:
         trafficcontroller: (( meta.loggregator.z2.trafficcontroller ))
 
   - name: hm_z1
+    release: cf
     template: health_manager_next
     instances: 1
     resource_pool: medium_z1
@@ -172,6 +184,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z1 ))
 
   - name: runner_z1
+    release: dea
     template:
       - dea_next
       - dea_logging_agent
@@ -189,6 +202,7 @@ jobs:
         trafficcontroller: (( meta.loggregator.z1.trafficcontroller ))
 
   - name: runner_z2
+    release: dea
     template:
       - dea_next
       - dea_logging_agent
@@ -206,6 +220,7 @@ jobs:
         trafficcontroller: (( meta.loggregator.z2.trafficcontroller ))
 
   - name: taskmaster_z1
+    release: cf
     template: narc
     instances: 1
     resource_pool: runner_z1
@@ -216,6 +231,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z1 ))
 
   - name: taskmaster_z2
+    release: cf
     template: narc
     instances: 1
     resource_pool: runner_z2
@@ -226,6 +242,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z2 ))
 
   - name: loggregator_z1
+    release: cf
     template: loggregator
     instances: 2
     resource_pool: small_z1
@@ -237,6 +254,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z1 ))
 
   - name: loggregator_z2
+    release: cf
     template: loggregator
     instances: 2
     resource_pool: small_z2
@@ -248,6 +266,7 @@ jobs:
       syslog_aggregator: (( meta.syslog.z2 ))
 
   - name: loggregator_trafficcontroller_z1
+    release: cf
     template: loggregator_trafficcontroller
     instances: 1
     resource_pool: small_z1
@@ -260,6 +279,7 @@ jobs:
       zone: z1
 
   - name: loggregator_trafficcontroller_z2
+    release: cf
     template: loggregator_trafficcontroller
     instances: 1
     resource_pool: small_z2
@@ -272,6 +292,7 @@ jobs:
       zone: z2
 
   - name: router_z1
+    release: cf
     template: gorouter
     instances: 1
     resource_pool: router_z1
@@ -285,6 +306,7 @@ jobs:
         trafficcontroller: (( meta.loggregator.z1.trafficcontroller ))
 
   - name: router_z2
+    release: cf
     template: gorouter
     instances: 1
     resource_pool: router_z2

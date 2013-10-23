@@ -310,11 +310,6 @@ uaa/tomcat-7.0.42.tar.gz:
   sha: !binary |-
     MDAxYTY0NjI5YTkzMTAzZDRmNTNhYzk1ZmFmM2U1MmE2MzY1N2I5NQ==
   size: 7955948
-loggregator/deaagent-linux-amd64.gz:
-  object_id: 7861a5c2-bb68-430c-9260-cd201d75e0ec
-  sha: !binary |-
-    ZjFiYTUzOTIyMjcyZjE1M2M5MThmZDY2MzViY2QxNjhmYWYxODY5ZA==
-  size: 1663548
 loggregator/loggregator-linux-amd64.gz:
   object_id: d16250ac-012a-4cbc-8acd-2ec46849ba39
   sha: !binary |-
