@@ -140,6 +140,23 @@ jobs:
       networks: (( meta.networks.z1 ))
       syslog_aggregator: (( meta.syslog.z1 ))
 
+  - name: cc_migrations_z1
+    template: cloud_controller_migrations
+    instances: 1
+    resource_pool: large_z1
+    persistent_disk: 0
+    networks:
+      - name: cf1
+    properties:
+      ccdb: ccdb
+      networks: (( meta.networks.z1 ))
+      syslog_aggregator: (( meta.syslog.z1 ))
+      loggregator_endpoint:
+        host: (( meta.loggregator.z1.endpoint ))
+    update:
+      canary_watch_time: 30000-3600000
+      update_watch_time: 30000-3600000
+
   - name: api_z1
     template: cloud_controller_ng
     instances: 1

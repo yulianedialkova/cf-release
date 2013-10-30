@@ -1,0 +1,5 @@
+check process cloud_controller_migrations
+  with pidfile /var/vcap/sys/run/cloud_controller_migrations/cloud_controller_migrations.pid
+  start program "/var/vcap/jobs/cloud_controller_migrations/bin/cloud_controller_migrations_ctl start" with timeout 3600 seconds
+  stop program "/var/vcap/jobs/cloud_controller_migrations/bin/cloud_controller_migrations_ctl stop"
+  group vcap
