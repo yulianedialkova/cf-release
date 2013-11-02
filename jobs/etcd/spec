@@ -1,0 +1,20 @@
+---
+name: etcd
+templates:
+  etcd_ctl.erb: bin/etcd_ctl
+
+packages:
+  - common
+  - etcd
+  - syslog_aggregator
+
+properties:
+  syslog_aggregator.address:
+    description: "IP address of syslog aggregator"
+  syslog_aggregator.port:
+    description: "TCP port of syslog aggregator"
+  etcd.machines:
+    description: "etcd cluster machine IPs"
+  networks.apps:
+    description: "Used to get our IP address"
+

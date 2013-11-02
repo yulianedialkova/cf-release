@@ -168,6 +168,28 @@ jobs:
       loggregator:
         trafficcontroller: (( meta.loggregator.z2.trafficcontroller ))
 
+  - name: etcd_z1
+    template: etcd
+    instances: 0
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+      syslog_aggregator: (( meta.syslog.z1 ))
+
+  - name: etcd_z2
+    template: etcd
+    instances: 0
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z2 ))
+      syslog_aggregator: (( meta.syslog.z2 ))
+
   - name: hm_z1
     template: health_manager_next
     instances: 1
@@ -367,6 +389,9 @@ properties:
 
   syslog_aggregator: ~
 
+  etcd:
+    machines: (( jobs.etcd_z1.networks.cf1.static_ips jobs.etcd_z2.networks.cf2.static_ips ))
+    
   nfs_server:
     address: (( jobs.nfs_z1.networks.cf1.static_ips.[0] || nil ))
     network: (( networks.cf1.subnets.[0].range ))

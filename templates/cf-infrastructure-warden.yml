@@ -196,6 +196,18 @@ jobs:
       - name: cf2
         static_ips: (( static_ips(3, 4) ))
 
+  - name: etcd_z1
+    instances: 3
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(9, 10, 11) ))
+
+  - name: etcd_z2
+    instances: 2
+    networks:
+      - name: cf2
+        static_ips: (( static_ips(9, 10) ))
+
   # only need one router, and set up static IPs
   - name: router_z1
     instances: 1

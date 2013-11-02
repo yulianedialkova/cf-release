@@ -10,7 +10,6 @@ templates:
   hm9000_evacuator_ctl: bin/hm9000_evacuator_ctl
   hm9000_shredder_ctl: bin/hm9000_shredder_ctl
   hm9000.json.erb: config/hm9000.json
-  etcd_ctl.erb: bin/etcd_ctl
   syslog_forwarder.conf.erb: config/syslog_forwarder.conf
 
 packages:
@@ -38,3 +37,5 @@ properties:
     description: "User used to access the bulk_api, health_manager uses it to connect to the cc, announced over NATS"
   ccng.bulk_api_password:
     description: "Password used to access the bulk_api, health_manager uses it to connect to the cc, announced over NATS"
+  etcd.machines:
+    description: "etcd cluster machine IPs"

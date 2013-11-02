@@ -2,6 +2,12 @@ update:
   canaries: 0
 
 jobs:
+  - name: etcd_z1
+    instances: 3
+
+  - name: etcd_z2
+    instances: 2
+
   - name: hm_z1
     instances: 0
 
