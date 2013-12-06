@@ -336,9 +336,22 @@ properties:
     default: "/var/vcap/sys/log/cloud_controller_ng/newrelic"
     description: "The location for NewRelic to log to"
 
-  ccng.memory_stats_databases.api:
+  ccng.memory_stats.database.api:
     default: ~
     description: "Sequel connection string for API process memory usage statistics."
-  ccng.memory_stats_databases.worker:
+  ccng.memory_stats.database.worker:
     default: ~
     description: "Sequel connection string for worker process memory usage statistics."
+  ccng.memory_stats.interval_seconds.api:
+    default: 300
+    description: "Time interval between memory stat snapshots for API process."
+  ccng.memory_stats.interval_seconds.worker:
+    default: 300
+    description: "Time interval between memory stat snapshots for worker process."
+  ccng.memory_stats.session_name.api:
+    default: "CC API"
+    description: "Name to use for click session for API process."
+  ccng.memory_stats.session_name.worker:
+    default: "CC worker"
+    description: "Name to use for click session for worker process."
+

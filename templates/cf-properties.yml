@@ -65,9 +65,16 @@ properties:
         memory_limit: 102400
         total_services: -1
 
-    memory_stats_databases:
-      api: ~
-      worker: ~
+    memory_stats:
+      database:
+        api: ~
+        worker: ~
+      interval_seconds:
+        api: ~
+        worker: ~
+      session_name:
+        api: ~
+        worker: ~
 
   login:
     catalina_opts: (( merge ))

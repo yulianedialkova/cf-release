@@ -172,6 +172,14 @@ disable_custom_buildpacks: <%= p("ccng.disable_custom_buildpacks") %>
 
 broker_client_timeout_seconds: <%= p("ccng.broker_client_timeout_seconds") %>
 
-memory_stats_databases:
-  worker: <%= p("ccng.memory_stats_databases.worker") %>
-  api: <%= p("ccng.memory_stats_databases.api") %>
+memory_stats:
+  database:
+    worker: <%= p("ccng.memory_stats.database.worker") %>
+    api: <%= p("ccng.memory_stats.database.api") %>
+  interval_seconds:
+    worker: <%= p("ccng.memory_stats.interval_seconds.worker") %>
+    api: <%= p("ccng.memory_stats.interval_seconds.api") %>
+  session_name:
+    worker: <%= p("ccng.memory_stats.session_name.worker") %>
+    api: <%= p("ccng.memory_stats.session_name.api") %>
+
