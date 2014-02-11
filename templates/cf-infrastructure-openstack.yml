@@ -2,8 +2,8 @@ meta:
   releases:
     name: (( merge ))
 
-  openstack:
-    net_id: (( merge ))
+  openstack: (( merge ))
+
   provider_dns: (( merge ))
 
   bosh-network:
@@ -11,11 +11,11 @@ meta:
 
   fog_config:
     provider: openstack
-      openstack_auth_url: (( meta.openstack.auth_url ))
-      openstack_api_key: (( meta.openstack.api_key ))
-      openstack_username: (( meta.openstack.username ))
-      openstack_tenant: (( meta.openstack.tenant ))
-      openstack_region: (( meta.openstack.region ))
+    openstack_auth_url: (( meta.openstack.auth_url ))
+    openstack_api_key: (( meta.openstack.api_key ))
+    openstack_username: (( meta.openstack.username ))
+    openstack_tenant: (( meta.openstack.tenant ))
+    openstack_region: (( meta.openstack.region ))
 
   stemcells:
     name: bosh-openstack-kvm-ubuntu
@@ -26,6 +26,7 @@ meta:
   loggregator_endpoint.z1.host: ## TODO
   loggregator_endpoint.z2.host: ## TODO
 
+  networks: (( merge ))
 
   networks.z1:
   networks.z2:
@@ -36,22 +37,34 @@ meta:
   zones.z2:
 
 
-
+networks:
+  - name: cf1
+    type: manual
+    subnets:
+    - name: private
+      range: (( meta.networks.cf1.range ))
+      gateway: (( meta.networks.cf1.gateway ))
+      reserved: (( meta.networks.cf1.reserved ))
+      static: (( meta.networks.cf1.static ))
+      cloud_properties:
+        net_id: (( meta.openstack.net_id ))
+        # see http://docs.cloudfoundry.com/docs/running/deploying-cf/common/security_groups.html
+        security_groups: (( meta.openstack.security_groups ))
 
 
 
 properties:
-  template_only: (( merge ))
+  template_only: ~
 
   logger_endpoint:
     port: 4443
 
-  loggregator:
-    blacklisted_syslog_ranges:
-    - start: (( merge ))
-      end:   (( merge ))
-    - start: (( merge ))
-      end:   (( merge ))
+#  loggregator:
+#    blacklisted_syslog_ranges:
+#    - start: (( merge ))
+#      end:   (( merge ))
+#    - start: (( merge ))
+#      end:   (( merge ))
 
   cc:
     resource_pool:
@@ -73,8 +86,7 @@ properties:
     deny_networks:
       - 169.254.0.0/16 # Openstack Metadata endpoint
       - (( meta.bosh-network.cidr )) # BOSH network
-      - (( networks.cf1.subnets.[0].range ))
-      - (( networks.cf2.subnets.[0].range ))
+      - (( networks.[0].subnets.[0].range ))
 
     allow_networks:
       - (( meta.provider_dns )) # Neutron DNS ## TODO: need to cat this out to a /32 ##
@@ -85,19 +97,6 @@ compilation:
     instance_type: m1.medium
 
 
-  networks:
-      - name: cf1
-        type: manual
-        subnets:
-        - name: private
-          range: (( meta.networks.cf1.range ))
-          gateway: (( meta.networks.cf1.gateway ))
-          reserved: (( meta.networks.cf1.reserved ))
-          static: (( meta.networks.cf1.static ))
-          cloud_properties:
-            net_id: (( meta.openstack.net_id ))
-            # see http://docs.cloudfoundry.com/docs/running/deploying-cf/common/security_groups.html
-            security_groups: (( meta.openstack.security_groups ))
 
 
 resource_pools:
