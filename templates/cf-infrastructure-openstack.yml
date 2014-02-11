@@ -1,0 +1,223 @@
+meta:
+  openstack:
+    net_id: (( merge ))
+  provider_dns: (( merge ))
+
+  bosh-network:
+    cidr: (( merge ))
+
+  fog_config:
+    provider: openstack
+      openstack_auth_url: (( merge ))
+      openstack_api_key:  (( merge ))
+      openstack_username: (( merge ))
+      openstack_tenant:   (( merge ))
+      openstack_region:   (( merge ))
+
+  stemcell:
+    name: bosh-openstack-kvm-ubuntu
+    version: latest
+
+properties:
+  template_only: (( merge ))
+
+  logger_endpoint:
+    port: 4443
+
+  loggregator:
+    blacklisted_syslog_ranges:
+    - start: (( merge ))
+      end:   (( merge ))
+    - start: (( merge ))
+      end:   (( merge ))
+
+  cc:
+    resource_pool:
+      fog_connection: (( meta.fog_config ))
+    packages:
+      fog_connection: (( meta.fog_config ))
+    droplets:
+      fog_connection: (( meta.fog_config ))
+    buildpacks:
+      fog_connection: (( meta.fog_config ))
+
+  uaa:
+    catalina_opts: -Xmx768m -XX:MaxPermSize=256m
+
+  login:
+    catalina_opts: -Xmx768m -XX:MaxPermSize=256m
+
+  dea_next:
+    deny_networks:
+      - 169.254.0.0/16 # Openstack Metadata endpoint
+      - (( meta.bosh-network.cidr )) # BOSH network
+      - (( networks.cf1.subnets.[0].range ))
+      - (( networks.cf2.subnets.[0].range ))
+
+    allow_networks:
+      - (( meta.provider_dns )) # Neutron DNS ## TODO: need to cat this out to a /32 ##
+
+
+compilation:
+  cloud_properties:
+    instance_type: m1.medium
+
+networks:
+  - name: cf1
+    type: manual
+    subnets:
+      - range: 10.10.16.0/20
+        name: default_unused
+        reserved:
+          - 10.10.16.2 - 10.10.16.9
+        static:
+          - 10.10.16.10 - 10.10.16.255
+        gateway: 10.10.16.1
+        dns:
+          - (( meta.provider_dns ))
+        cloud_properties:
+          security_groups:
+            - cf
+          net_id: (( meta.openstack.net_id ))
+
+  - name: cf2
+    type: manual
+    subnets:
+      - range: 10.10.80.0/20
+        name: default_unused
+        reserved:
+          - 10.10.80.2 - 10.10.80.9
+        static:
+          - 10.10.80.10 - 10.10.80.255
+        gateway: 10.10.80.1
+        dns:
+          - (( meta.provider_dns ))
+        cloud_properties:
+          security_groups:
+            - cf
+          net_id: (( meta.openstack.net_id ))
+
+resource_pools:
+  - name: small_z1
+    cloud_properties:
+      instance_type: m1.small
+
+  - name: small_z2
+    cloud_properties:
+      instance_type: m1.small
+
+  - name: medium_z1
+    cloud_properties:
+      instance_type: m1.medium
+
+
+  - name: medium_z2
+    cloud_properties:
+      instance_type: m1.medium
+
+  - name: large_z1
+    cloud_properties:
+      instance_type: m1.large
+
+  - name: large_z2
+    cloud_properties:
+      instance_type: m1.large
+
+  - name: runner_z1
+    cloud_properties:
+      instance_type: m1.large
+
+  - name: runner_z2
+    cloud_properties:
+      instance_type: m1.large
+
+  - name: router_z1
+    cloud_properties:
+      instance_type: m1.medium
+      elbs: (( merge || ["cfrouter"] ))
+
+  - name: router_z2
+    cloud_properties:
+      instance_type: m1.medium
+      elbs: (( merge || ["cfrouter"] ))
+
+
+# set up static IPs
+jobs:
+  - name: logs_z1
+    instances: 0
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(0) ))
+
+  - name: logs_z2
+    instances: 0
+    networks:
+      - name: cf2
+        static_ips: (( static_ips(0) ))
+
+  - name: nats_z1
+    instances: 0
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(1) ))
+
+  - name: nats_z2
+    instances: 1
+    networks:
+      - name: cf2
+        static_ips: (( static_ips(1) ))
+
+  - name: router_z1
+    instances: 1
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(5, 6, 15, 16, 17, 18, 19, 20) ))
+
+  - name: router_z2
+    instances: 1
+    networks:
+      - name: cf2
+        static_ips: (( static_ips(5, 6, 15, 16, 17, 18, 19, 20) ))
+
+  - name: loggregator_z1
+    instances: 2
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(21, 22) ))
+
+  - name: loggregator_z2
+    instances: 2
+    networks:
+      - name: cf2
+        static_ips: (( static_ips(21, 22) ))
+
+  - name: loggregator_trafficcontroller_z1
+    instances: 1
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(24) ))
+
+  - name: loggregator_trafficcontroller_z2
+    instances: 1
+    networks:
+      - name: cf2
+        static_ips: (( static_ips(24) ))
+
+  - name: etcd_leader_z1
+    instances: 1
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(9) ))
+
+  - name: etcd_z1
+    instances: 1
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(10) ))
+
+  - name: etcd_z2
+    instances: 1
+    networks:
+      - name: cf2
+        static_ips: (( static_ips(9) ))
