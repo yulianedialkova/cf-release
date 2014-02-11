@@ -1,4 +1,7 @@
 meta:
+  releases:
+    name: (( merge ))
+
   openstack:
     net_id: (( merge ))
   provider_dns: (( merge ))
@@ -8,15 +11,34 @@ meta:
 
   fog_config:
     provider: openstack
-      openstack_auth_url: (( merge ))
-      openstack_api_key:  (( merge ))
-      openstack_username: (( merge ))
-      openstack_tenant:   (( merge ))
-      openstack_region:   (( merge ))
+      openstack_auth_url: (( meta.openstack.auth_url ))
+      openstack_api_key: (( meta.openstack.api_key ))
+      openstack_username: (( meta.openstack.username ))
+      openstack_tenant: (( meta.openstack.tenant ))
+      openstack_region: (( meta.openstack.region ))
+
+  stemcells:
+    name: bosh-openstack-kvm-ubuntu
+    version: (( merge || "latest" ))
+
+  environment: (( merge ))
+
+  loggregator_endpoint.z1.host: ## TODO
+  loggregator_endpoint.z2.host: ## TODO
+
+
+  networks.z1:
+  networks.z2:
+
 
   stemcell:
-    name: bosh-openstack-kvm-ubuntu
-    version: latest
+  zones.z1:
+  zones.z2:
+
+
+
+
+
 
 properties:
   template_only: (( merge ))
@@ -62,40 +84,21 @@ compilation:
   cloud_properties:
     instance_type: m1.medium
 
-networks:
-  - name: cf1
-    type: manual
-    subnets:
-      - range: 10.10.16.0/20
-        name: default_unused
-        reserved:
-          - 10.10.16.2 - 10.10.16.9
-        static:
-          - 10.10.16.10 - 10.10.16.255
-        gateway: 10.10.16.1
-        dns:
-          - (( meta.provider_dns ))
-        cloud_properties:
-          security_groups:
-            - cf
-          net_id: (( meta.openstack.net_id ))
 
-  - name: cf2
-    type: manual
-    subnets:
-      - range: 10.10.80.0/20
-        name: default_unused
-        reserved:
-          - 10.10.80.2 - 10.10.80.9
-        static:
-          - 10.10.80.10 - 10.10.80.255
-        gateway: 10.10.80.1
-        dns:
-          - (( meta.provider_dns ))
-        cloud_properties:
-          security_groups:
-            - cf
-          net_id: (( meta.openstack.net_id ))
+  networks:
+      - name: cf1
+        type: manual
+        subnets:
+        - name: private
+          range: (( meta.networks.cf1.range ))
+          gateway: (( meta.networks.cf1.gateway ))
+          reserved: (( meta.networks.cf1.reserved ))
+          static: (( meta.networks.cf1.static ))
+          cloud_properties:
+            net_id: (( meta.openstack.net_id ))
+            # see http://docs.cloudfoundry.com/docs/running/deploying-cf/common/security_groups.html
+            security_groups: (( meta.openstack.security_groups ))
+
 
 resource_pools:
   - name: small_z1
