@@ -1,6 +1,7 @@
+releases: (( merge ))
+
 meta:
-  releases:
-    name: (( merge ))
+  releases: (( releases ))
 
   openstack: (( merge ))
 
@@ -51,6 +52,19 @@ networks:
         # see http://docs.cloudfoundry.com/docs/running/deploying-cf/common/security_groups.html
         security_groups: (( meta.openstack.security_groups ))
 
+  - name: cf2
+    type: manual
+    subnets:
+    - name: private
+      range: ~
+      gateway: ~
+      reserved: ~
+      static:
+      -
+      cloud_properties:
+        net_id: (( meta.openstack.net_id ))
+        security_groups: (( meta.openstack.security_groups ))
+
 
 
 properties:
@@ -66,15 +80,8 @@ properties:
 #    - start: (( merge ))
 #      end:   (( merge ))
 
-  cc:
-    resource_pool:
-      fog_connection: (( meta.fog_config ))
-    packages:
-      fog_connection: (( meta.fog_config ))
-    droplets:
-      fog_connection: (( meta.fog_config ))
-    buildpacks:
-      fog_connection: (( meta.fog_config ))
+  ccng: (( merge ))
+  cc: (( merge ))
 
   uaa:
     catalina_opts: -Xmx768m -XX:MaxPermSize=256m
@@ -86,7 +93,6 @@ properties:
     deny_networks:
       - 169.254.0.0/16 # Openstack Metadata endpoint
       - (( meta.bosh-network.cidr )) # BOSH network
-      - (( networks.[0].subnets.[0].range ))
 
     allow_networks:
       - (( meta.provider_dns )) # Neutron DNS ## TODO: need to cat this out to a /32 ##
@@ -156,7 +162,7 @@ jobs:
     instances: 0
     networks:
       - name: cf2
-        static_ips: (( static_ips(0) ))
+        static_ips: []
 
   - name: nats_z1
     instances: 0
@@ -165,10 +171,10 @@ jobs:
         static_ips: (( static_ips(1) ))
 
   - name: nats_z2
-    instances: 1
+    instances: 0
     networks:
       - name: cf2
-        static_ips: (( static_ips(1) ))
+        static_ips: ['']
 
   - name: router_z1
     instances: 1
@@ -177,10 +183,10 @@ jobs:
         static_ips: (( static_ips(5, 6, 15, 16, 17, 18, 19, 20) ))
 
   - name: router_z2
-    instances: 1
+    instances: 0
     networks:
       - name: cf2
-        static_ips: (( static_ips(5, 6, 15, 16, 17, 18, 19, 20) ))
+        static_ips: []
 
   - name: loggregator_z1
     instances: 2
@@ -189,10 +195,10 @@ jobs:
         static_ips: (( static_ips(21, 22) ))
 
   - name: loggregator_z2
-    instances: 2
+    instances: 0
     networks:
       - name: cf2
-        static_ips: (( static_ips(21, 22) ))
+        static_ips: []
 
   - name: loggregator_trafficcontroller_z1
     instances: 1
@@ -201,10 +207,10 @@ jobs:
         static_ips: (( static_ips(24) ))
 
   - name: loggregator_trafficcontroller_z2
-    instances: 1
+    instances: 0
     networks:
       - name: cf2
-        static_ips: (( static_ips(24) ))
+        static_ips: ~
 
   - name: etcd_leader_z1
     instances: 1
@@ -219,7 +225,7 @@ jobs:
         static_ips: (( static_ips(10) ))
 
   - name: etcd_z2
-    instances: 1
+    instances: 0
     networks:
       - name: cf2
-        static_ips: (( static_ips(9) ))
+        static_ips: []
