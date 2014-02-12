@@ -18,7 +18,7 @@ meta:
     openstack_tenant: (( meta.openstack.tenant ))
     openstack_region: (( meta.openstack.region ))
 
-  stemcells:
+  stemcell:
     name: bosh-openstack-kvm-ubuntu
     version: (( merge || "latest" ))
 
@@ -28,14 +28,6 @@ meta:
   loggregator_endpoint.z2.host: ## TODO
 
   networks: (( merge ))
-
-  networks.z1:
-  networks.z2:
-
-
-  stemcell:
-  zones.z1:
-  zones.z2:
 
 
 networks:
@@ -52,6 +44,8 @@ networks:
         # see http://docs.cloudfoundry.com/docs/running/deploying-cf/common/security_groups.html
         security_groups: (( meta.openstack.security_groups ))
 
+# The default Openstack deploy only uses one network. This is zeroed out to allow
+# downstream templates to work
   - name: cf2
     type: manual
     subnets:
@@ -79,6 +73,21 @@ properties:
 #      end:   (( merge ))
 #    - start: (( merge ))
 #      end:   (( merge ))
+
+
+## TODO: figure out what these ccng values should be for a generic openstack
+## possibly don't need these if we using local nfs stuff
+#  cc:
+#    resource_pool:
+#      fog_connection: (( meta.fog_config ))
+#    packages:
+#      fog_connection: (( meta.fog_config ))
+#    droplets:
+#      fog_connection: (( meta.fog_config ))
+#    buildpacks:
+#      fog_connection: (( meta.fog_config ))
+#    default_fog_connection:
+#      local_root: /var/vcap/nfs/shared
 
   ccng: (( merge ))
   cc: (( merge ))
@@ -153,7 +162,7 @@ resource_pools:
 # set up static IPs
 jobs:
   - name: logs_z1
-    instances: 0
+    instances: 1
     networks:
       - name: cf1
         static_ips: (( static_ips(0) ))
@@ -165,7 +174,7 @@ jobs:
         static_ips: []
 
   - name: nats_z1
-    instances: 0
+    instances: 1
     networks:
       - name: cf1
         static_ips: (( static_ips(1) ))
@@ -189,7 +198,7 @@ jobs:
         static_ips: []
 
   - name: loggregator_z1
-    instances: 2
+    instances: 1
     networks:
       - name: cf1
         static_ips: (( static_ips(21, 22) ))
