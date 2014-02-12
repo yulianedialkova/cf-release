@@ -75,20 +75,6 @@ properties:
 #      end:   (( merge ))
 
 
-## TODO: figure out what these ccng values should be for a generic openstack
-## possibly don't need these if we using local nfs stuff
-#  cc:
-#    resource_pool:
-#      fog_connection: (( meta.fog_config ))
-#    packages:
-#      fog_connection: (( meta.fog_config ))
-#    droplets:
-#      fog_connection: (( meta.fog_config ))
-#    buildpacks:
-#      fog_connection: (( meta.fog_config ))
-#    default_fog_connection:
-#      local_root: /var/vcap/nfs/shared
-
   ccng: (( merge ))
   cc: (( merge ))
 
