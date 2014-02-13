@@ -1,6 +1,7 @@
 releases: (( merge ))
 
 meta:
+
   releases: (( releases ))
 
   openstack: (( merge ))
@@ -24,11 +25,7 @@ meta:
 
   environment: (( merge ))
 
-  loggregator_endpoint.z1.host: ## TODO
-  loggregator_endpoint.z2.host: ## TODO
-
   networks: (( merge ))
-
 
 networks:
   - name: cf1
@@ -53,13 +50,11 @@ networks:
       range: ~
       gateway: ~
       reserved: ~
-      static:
-      -
+      static: ~
+      #-
       cloud_properties:
         net_id: (( meta.openstack.net_id ))
         security_groups: (( meta.openstack.security_groups ))
-
-
 
 properties:
   template_only: ~
@@ -67,13 +62,15 @@ properties:
   logger_endpoint:
     port: 4443
 
-#  loggregator:
-#    blacklisted_syslog_ranges:
-#    - start: (( merge ))
-#      end:   (( merge ))
-#    - start: (( merge ))
-#      end:   (( merge ))
-
+  # loggregator.blacklisted_syslog_ranges
+  # used to prevent non-user app syslogs from sending
+  # data to the user app log server. optional
+  loggregator:
+    blacklisted_syslog_ranges:
+    - start: (( merge || ~ )) ##TODO this renders literally
+      end:   (( merge || ~ )) ##TODO this renders literally
+    - start: (( merge || ~ )) ##TODO this renders literally
+      end:   (( merge || ~ )) ##TODO this renders literally
 
   ccng: (( merge ))
   cc: (( merge ))
@@ -90,15 +87,11 @@ properties:
       - (( meta.bosh-network.cidr )) # BOSH network
 
     allow_networks:
-      - (( meta.provider_dns )) # Neutron DNS ## TODO: need to cat this out to a /32 ##
-
+      - (( meta.provider_dns "/32" ))
 
 compilation:
   cloud_properties:
     instance_type: m1.medium
-
-
-
 
 resource_pools:
   - name: small_z1
@@ -112,7 +105,6 @@ resource_pools:
   - name: medium_z1
     cloud_properties:
       instance_type: m1.medium
-
 
   - name: medium_z2
     cloud_properties:
@@ -144,8 +136,9 @@ resource_pools:
       instance_type: m1.medium
       elbs: (( merge || ["cfrouter"] ))
 
-
-# set up static IPs
+# This config is for the simplest Openstack config using just one AZ.
+# All values for "z2" and network "cf2" are set to null. They'll end up
+# in the final 'spiff merge' manifest with zero instances.
 jobs:
   - name: logs_z1
     instances: 1
@@ -153,23 +146,29 @@ jobs:
       - name: cf1
         static_ips: (( static_ips(0) ))
 
-  - name: logs_z2
-    instances: 0
-    networks:
-      - name: cf2
-        static_ips: []
-
   - name: nats_z1
     instances: 1
     networks:
       - name: cf1
         static_ips: (( static_ips(1) ))
 
-  - name: nats_z2
-    instances: 0
+  - name: nfs_z1
+    instances: 1
     networks:
-      - name: cf2
-        static_ips: ['']
+      - name: cf1
+        static_ips: (( static_ips(2) ))
+
+  - name: postgres_z1
+    instances: 1
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(3) ))
+
+  - name: hm_z1
+    instances: 1
+    networks:
+      - name: cf1
+        static_ips: (( static_ips(4) )) ## TODO: this IP is not carried downstream
 
   - name: router_z1
     instances: 1
@@ -177,35 +176,17 @@ jobs:
       - name: cf1
         static_ips: (( static_ips(5, 6, 15, 16, 17, 18, 19, 20) ))
 
-  - name: router_z2
-    instances: 0
-    networks:
-      - name: cf2
-        static_ips: []
-
   - name: loggregator_z1
     instances: 1
     networks:
       - name: cf1
         static_ips: (( static_ips(21, 22) ))
 
-  - name: loggregator_z2
-    instances: 0
-    networks:
-      - name: cf2
-        static_ips: []
-
   - name: loggregator_trafficcontroller_z1
     instances: 1
     networks:
       - name: cf1
         static_ips: (( static_ips(24) ))
-
-  - name: loggregator_trafficcontroller_z2
-    instances: 0
-    networks:
-      - name: cf2
-        static_ips: ~
 
   - name: etcd_leader_z1
     instances: 1
@@ -219,8 +200,54 @@ jobs:
       - name: cf1
         static_ips: (( static_ips(10) ))
 
+  # Set *_z2 job instances to 0
+  - name: logs_z2
+    instances: 0
+    networks:
+      - name: cf2
+        static_ips: []
+
+  - name: nats_z2
+    instances: 0
+    networks:
+      - name: cf2
+        static_ips: [~]
+
+  - name: router_z2
+    instances: 0
+    networks:
+      - name: cf2
+        static_ips: []
+
   - name: etcd_z2
     instances: 0
     networks:
       - name: cf2
         static_ips: []
+
+  - name: loggregator_z2
+    instances: 0
+    networks:
+     - name: cf2
+       static_ips: []
+
+  - name: loggregator_trafficcontroller_z2
+    instances: 0
+    networks:
+      - name: cf2
+        static_ips: ~
+
+  - name: uaa_z2
+    instances: 0
+
+  - name: api_z2
+    instances: 0
+
+  - name: api_worker_z2
+    instances: 0
+
+  - name: hm9000_z2
+    instances: 0
+
+  - name: runner_z2
+    instances: 0
