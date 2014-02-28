@@ -20,7 +20,6 @@ export PATH=$MAVEN_HOME/bin:$JAVA_HOME/bin:$PATH
 
 #Maven options for building
 export MAVEN_OPTS='-Xmx1g -XX:MaxPermSize=512m'
-mkdir -p ${BUILD_DIR}/target/repo
 
 #build cloud foundry war
 cd ${BUILD_DIR}/login
@@ -28,8 +27,37 @@ mvn clean
 mvn -U -e -B package -DskipTests=true -Ddot.git.directory=${RELEASE_DIR}/src/login/.git
 cp login-server/target/cloudfoundry-login-server-*.war ${BUILD_DIR}/login/cloudfoundry-login-server.war
 
+#remove build resources
+mvn clean
+
 #clean up - so we don't transfer files we don't need
 cd ${BUILD_DIR}
 rm -rf apache-maven*
 rm -rf java
 rm -rf maven
+
+#clean up source code, we don't need that anymore
+rm -rf ${BUILD_DIR}/uaa/scim
+rm -rf ${BUILD_DIR}/uaa/common
+rm -rf ${BUILD_DIR}/uaa/gatling
+rm -rf ${BUILD_DIR}/uaa/samples
+rm -rf ${BUILD_DIR}/uaa/docs
+rm -rf ${BUILD_DIR}/uaa/uaa
+
+rm -f ${BUILD_DIR}/uaa/README.md
+rm -f ${BUILD_DIR}/uaa/NOTICE
+rm -f ${BUILD_DIR}/uaa/.run-script.sh
+rm -f ${BUILD_DIR}/uaa/.travis.yml
+rm -f ${BUILD_DIR}/uaa/pom.xml
+rm -f ${BUILD_DIR}/uaa/LICENSE
+
+rm -rf ${BUILD_DIR}/login/login-server
+rm -rf ${BUILD_DIR}/login/login-server-common
+rm -rf ${BUILD_DIR}/login/docs
+
+rm -f ${BUILD_DIR}/login/README.md
+rm -f ${BUILD_DIR}/login/NOTICE
+rm -f ${BUILD_DIR}/login/.run-script.sh
+rm -f ${BUILD_DIR}/login/.travis.yml
+rm -f ${BUILD_DIR}/login/pom.xml
+rm -f ${BUILD_DIR}/login/LICENSE
