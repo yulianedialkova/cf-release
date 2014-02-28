@@ -6,7 +6,7 @@ check process cloud_controller_ng
   group vcap
   if totalmem > 2250 Mb then alert
   if totalmem > 2450 Mb then restart
-  if failed host <%= spec.networks.send(properties.networks.apps).ip %> port <%= p("ccng.port") %> protocol http
+  if failed host <%= spec.networks.send(properties.networks.apps).ip %> port <%= p("ccng.external_port") %> protocol http
       and request '/v2/info'
       with timeout 60 seconds for 5 cycles
   then restart
@@ -29,6 +29,15 @@ check process nginx_ccng
   start program "/var/vcap/jobs/cloud_controller_ng/bin/nginx_ctl start"
   stop program "/var/vcap/jobs/cloud_controller_ng/bin/nginx_ctl stop"
   group vcap
+
+<% if_p("ccng.newrelic.license_key") do %>
+check process nginx_newrelic_plugin
+  with pidfile /var/vcap/sys/run/nginx_newrelic_plugin/nginx_newrelic_plugin.pid
+  start program "/var/vcap/jobs/cloud_controller_ng/bin/nginx_newrelic_plugin_ctl start"
+  stop program "/var/vcap/jobs/cloud_controller_ng/bin/nginx_newrelic_plugin_ctl stop"
+  group vcap
+<% end %>
+
 <% end %>
 
 <% if p("ccng.process_group") == "clock" %>
@@ -52,3 +61,4 @@ check process cloud_controller_jobs_<%= index %>
   if totalmem > 2450 Mb then restart
 <% end %>
 <% end %>
+

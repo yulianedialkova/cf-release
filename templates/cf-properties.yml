@@ -41,11 +41,15 @@ properties:
     audit_events:
       cutoff_age_in_days: 31
 
+    billing_event_writing_enabled: true
+
     process_group: cloud_controller
 
     hm9000_noop: false
+    diego: false
     default_app_memory: 1024
     maximum_app_disk_in_mb: 2048
+    client_max_body_size: 256M
 
     srv_api_uri: (( "https://api." domain ))
 
@@ -60,7 +64,7 @@ properties:
 
     disable_custom_buildpacks: false
 
-    broker_client_timeout_seconds: 60
+    broker_client_timeout_seconds: 70
 
     resource_pool:
       resource_directory_key: (( domain "-cc-resources" ))
@@ -100,6 +104,7 @@ properties:
     catalina_opts: (( merge ))
     uaa_certificate: ~
     protocol: https
+    brand: oss
 
     links:
       home: (( "https://console." domain ))
@@ -129,7 +134,10 @@ properties:
     batch:
       username: (( merge ))
       password: (( merge ))
-
+    
+    login:
+      addnew: false
+      
     clients:
       login:
         override: true
@@ -178,3 +186,4 @@ properties:
         authorized-grant-types: client_credentials
         access-token-validity: 1209600
         refresh-token-validity: 1209600
+      cc_service_broker_client: ~

@@ -1,6 +1,8 @@
 ---
+#Actually NGX host and port
 local_route: <%= spec.networks.send(properties.networks.apps).ip %>
-port: <%= p("ccng.port") %>
+external_port: <%= p("ccng.external_port") %>
+
 pid_filename: /var/vcap/sys/run/cloud_controller_ng/cloud_controller_ng.pid
 development_mode: <%= p("ccng.development_mode") %>
 
@@ -61,8 +63,12 @@ app_usage_events:
 audit_events:
   cutoff_age_in_days: <%= p("ccng.audit_events.cutoff_age_in_days") %>
 
+billing_event_writing_enabled: <%= p("ccng.billing_event_writing_enabled") %>
+
 default_app_memory: <%= p("ccng.default_app_memory") %>
 maximum_app_disk_in_mb: <%= p("ccng.maximum_app_disk_in_mb") %>
+
+request_timeout_in_seconds: <%= p("request_timeout_in_seconds") %>
 
 cc_partition: <%= p("ccng.cc_partition") %>
 
@@ -94,7 +100,7 @@ directories:
 
 logging:
   file: /var/vcap/sys/log/cloud_controller_ng/cloud_controller_ng.log
-  <% if_p("syslog_aggregator") do %>
+  <% if_p("syslog_aggregator.address") do %>
   syslog: vcap.cloud_controller_ng
   <% end %>
   level: <%= p("ccng.logging_level") %>
@@ -132,7 +138,7 @@ uaa:
 
 # App staging parameters
 staging:
-  max_staging_runtime: <%= p("ccng.max_staging_runtime") %>
+  timeout_in_seconds: <%= p("ccng.staging_timeout_in_seconds") %>
   minimum_staging_memory_mb: <%= p("dea_next.staging_memory_limit_mb") %>
   auth:
     user: <%= p("ccng.staging_upload_user") %>
@@ -205,3 +211,15 @@ flapping_crash_count_threshold: <%= p("ccng.flapping_crash_count_threshold") %>
 disable_custom_buildpacks: <%= p("ccng.disable_custom_buildpacks") %>
 
 broker_client_timeout_seconds: <%= p("ccng.broker_client_timeout_seconds") %>
+
+renderer:
+  max_results_per_page: <%= p("ccng.renderer.max_results_per_page") %>
+  default_results_per_page: <%= p("ccng.renderer.default_results_per_page") %>
+  max_inline_relations_depth: <%= p("ccng.renderer.max_inline_relations_depth") %>
+
+<% if_p("uaa.clients.cc_service_broker_client.secret") do %>
+uaa_client_name: "cc_service_broker_client"
+uaa_client_secret: <%= p("uaa.clients.cc_service_broker_client.secret") %>
+<% end %>
+
+diego: <%= p("ccng.diego") %>

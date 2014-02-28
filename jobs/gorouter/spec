@@ -12,8 +12,17 @@ packages:
   - gorouter
   - syslog_aggregator
 properties:
-  syslog_aggregator:
-    description:
+  syslog_aggregator.address:
+    description: "IP address for syslog aggregator"
+  syslog_aggregator.port:
+    description: "TCP port of syslog aggregator"
+  syslog_aggregator.all:
+    description: "Define whether forwarders should send all their syslog data to our aggregator."
+    default: false
+  syslog_aggregator.transport:
+    description: "Transport to be used when forwarding logs (tcp|udp|relp)."
+    default: "tcp"
+
   router.status.port:
     description: "Port for the Router varz/status endpoint."
     default: 8080
@@ -39,9 +48,9 @@ properties:
       If the X-Vcap-Trace request header is set and has this value,
       trace headers are added to the response.
     default: 22
-  router.endpoint_timeout:
+  request_timeout_in_seconds:
     description: "Timeout in seconds for Router -> Endpoint roundtrip."
-    default: 60
+    default: 300
   loggregator_endpoint.host:
     description: "The host used to emit messages to the Loggregator"
   loggregator_endpoint.port:

@@ -48,6 +48,7 @@ oauth:
   <% end %>
   clients:
 <% if properties.uaa.clients then properties.uaa.clients.marshal_dump.each do |id,client| %>
+    <% next unless client %>
     <%= id %>:<% client.marshal_dump.each do |key,value|%>
       <%= key %>: <%= value %><% end %><% end %>
 <% end %>
@@ -110,6 +111,4 @@ require_https: <%= properties.uaa.require_https %>
 <% if !properties.uaa.dump_requests.nil? %>
 dump_requests: <%= properties.uaa.dump_requests %>
 <% end %>
-<% if properties.uaa.login && !properties.uaa.login.addnew.nil? %>
 login.addnew: <%= properties.uaa.login.addnew %>
-<% end %>

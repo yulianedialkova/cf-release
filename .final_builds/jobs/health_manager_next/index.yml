@@ -64,3 +64,18 @@ builds:
     version: 14
     sha1: !binary |-
       YjZhNDIxNDYxNWVkZTQzNjlkNmZhMTIzNmExNGY0YjgxNmZhNDA1YQ==
+  !binary "MDgzYjVjYjM3ZWY4MzYyOTJlNTFlNzgyYjg1ZjM5M2ZkYjRmNDhkYw==":
+    blobstore_id: abc2a375-8fbc-4338-82ce-8d592d2048b5
+    version: 15
+    sha1: !binary |-
+      OTI4NDE3YzkzOTFhZmQwNDU4Y2QyMDBkYzg0ZTAwMWNmOGYxNzU0Nw==
+  !binary "MDYwYzk2ZTk5NDA4ODFhNjRjOGRhYzEyZDY4ZTRiNDQ5OWM3MmYyMw==":
+    blobstore_id: 22e847ac-87de-4fbe-aa96-bae05fefccf3
+    version: 16
+    sha1: !binary |-
+      MzYwMmJkOGNlYmUxMzg0OTg2MmJiYzc5ZmU4NDgwNzYxODA3ZDI2Ng==
+  !binary "ODM1OGEyOThlYjA2NzM5MmUxZmRiODkxMGUwNWE0MzhhNzFiZmZmNQ==":
+    blobstore_id: c65998e2-33ce-4b56-b3a5-c410fe3cc0de
+    version: 17
+    sha1: !binary |-
+      YmY0MTk1NmFjNDFkMDkzYjZlNzEzNDVjNDg5ZjY0N2JhNDc2MzU4ZA==

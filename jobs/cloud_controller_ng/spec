@@ -8,16 +8,20 @@ templates:
   cloud_controller_ng_ctl.erb: bin/cloud_controller_ng_ctl
   cloud_controller_jobs_ctl.erb: bin/cloud_controller_jobs_ctl
   cloud_controller_clock_ctl.erb: bin/cloud_controller_clock_ctl
+  handle_nfs_or_local_blobstore.sh.erb: bin/handle_nfs_or_local_blobstore.sh
   stacks.yml.erb: config/stacks.yml
   syslog_forwarder.conf.erb: config/syslog_forwarder.conf
   nfs-common: config/nfs-common
   idmapd.conf.erb: config/idmapd.conf
   newrelic.yml.erb: config/newrelic.yml
+  nginx_newrelic_plugin_ctl.erb: bin/nginx_newrelic_plugin_ctl
+  newrelic_plugin.yml.erb: config/newrelic_plugin.yml
 
 packages:
   - common
   - cloud_controller_ng
   - nginx
+  - nginx_newrelic_plugin
   - libpq
   - mysqlclient
   - sqlite
@@ -25,6 +29,17 @@ packages:
   - syslog_aggregator
 
 properties:
+  syslog_aggregator.address:
+    description: "IP address for syslog aggregator"
+  syslog_aggregator.port:
+    description: "TCP port of syslog aggregator"
+  syslog_aggregator.all:
+    description: "Define whether forwarders should send all their syslog data to our aggregator."
+    default: false
+  syslog_aggregator.transport:
+    description: "Transport to be used when forwarding logs (tcp|udp|relp)."
+    default: "tcp"
+
   name:
     default: "vcap"
     description:
@@ -80,7 +95,11 @@ properties:
     description: "Pipefs directory for NFS idmapd"
     default: "/var/lib/nfs/rpc_pipefs"
 
-  ccng.port:
+  request_timeout_in_seconds:
+    description: "Timeout for requests in seconds."
+    default: 300
+
+  ccng.external_port:
     description: "External Cloud Controller port"
     default: 9022
 
@@ -113,6 +132,9 @@ properties:
   ccng.audit_events.cutoff_age_in_days:
     description: "How old an audit event should stay in cloud controller database before being cleaned up"
     default: 31
+  ccng.billing_event_writing_enabled:
+    description: "If true, billing events are written to the CCDB."
+    default: true
   ccng.info.name:
     description: "name attribute in the /info endpoint"
   ccng.info.build:
@@ -160,7 +182,7 @@ properties:
     default: 1
     description: "Passthru value for Steno logger"
 
-  ccng.max_staging_runtime:
+  ccng.staging_timeout_in_seconds:
     default: 900
     description: "Timeout for staging a droplet"
   ccng.maximum_health_check_timeout:
@@ -177,6 +199,7 @@ properties:
     default: ""
     description: "S3 Access key for staging droplets on AWS installs; Blobstore user for other IaaSs"
   ccng.staging_upload_password:
+    default: ""
     description: "S3 Secure Access Key for staging droplets on AWS installs; Blobstore password for other IaaSs"
 
   ccng.quota_definitions:
@@ -290,10 +313,6 @@ properties:
   login.url:
     description:
 
-  syslog_aggregator.address:
-    description: "The address of the syslog_aggregator job."
-  syslog_aggregator.port:
-    description: "The port used by the syslog_aggregator job."
   uaa.jwt.verification_key:
     default: ""
     description: "ssl cert defined in the manifest by the UAA, required by the cc to communicate with UAA"
@@ -333,9 +352,15 @@ properties:
   ccng.hm9000_noop:
     default: true
     description: "Disable processing HM9000 messages"
+  ccng.diego:
+    default: false
+    description: "Enable diego support"
   ccng.flapping_crash_count_threshold:
     default: 3
     description: "The threshold of crashes after which the app is marked as flapping"
+  ccng.client_max_body_size:
+    default: "256M"
+    description: "Maximum body size for nginx"
 
   ccng.disable_custom_buildpacks:
     default: false
@@ -387,3 +412,16 @@ properties:
   dea_next.staging_memory_limit_mb:
     description: "Memory limit in mb for staging tasks"
     default: 1024
+
+  ccng.renderer.max_results_per_page:
+    description: "Maximum number of results returned per page"
+    default: 100
+  ccng.renderer.default_results_per_page:
+    description: "Default number of results returned per page if user does not specify"
+    default: 50
+  ccng.renderer.max_inline_relations_depth:
+    description: "Maximum depth of inlined relationships in the result"
+    default: 2
+
+  uaa.clients.cc_service_broker_client.secret:
+    description: "Used for generating SSO clients for service brokers."

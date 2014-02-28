@@ -27,18 +27,18 @@ http {
 
   keepalive_timeout  75 20; #inherited from router
 
-  client_max_body_size 256M; #already enforced upstream/but doesn't hurt.
+  client_max_body_size <%= p("ccng.client_max_body_size") %>; #already enforced upstream/but doesn't hurt.
 
   upstream cloud_controller {
     server unix:/var/vcap/sys/run/cloud_controller_ng/cloud_controller.sock;
   }
 
   server {
-    listen    9022;
+    listen    <%= p("ccng.external_port") %>;
     server_name  _;
     server_name_in_redirect off;
-    proxy_send_timeout          <%= p("router.client_inactivity_timeout", 300) %>;
-    proxy_read_timeout          <%= p("router.app_inactivity_timeout", 300) %>;
+    proxy_send_timeout          <%= p("request_timeout_in_seconds") %>;
+    proxy_read_timeout          <%= p("request_timeout_in_seconds") %>;
 
     # proxy and log all CC traffic
     location / {
@@ -150,5 +150,15 @@ http {
       # Download the file and send it to client
       proxy_pass $download_url;
     }
+
+    <% if_p("ccng.newrelic.license_key") do %>
+    location /nginx_status {
+      stub_status on;
+      access_log  /var/vcap/sys/log/nginx_newrelic_plugin/nginx_newrelic_plugin.access.log main;
+      allow 127.0.0.1;
+      deny all;
+    }
+    <% end %>
+
   }
 }
