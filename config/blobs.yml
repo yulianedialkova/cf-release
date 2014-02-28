@@ -513,16 +513,6 @@ maven/apache-maven-3.1.1-bin.tar.gz:
   sha: !binary |-
     NjMwZWVhMjEwN2IwNzQyYWNiMzE1YjIxNDAwOWJhMDg2MDJkZGE1Zg==
   size: 5494427
-login/cloudfoundry-login-server-1.4.1.war:
-  object_id: c7f9ca55-5673-4613-a166-eb071ec95678
-  sha: !binary |-
-    MzJiNDY3YTc5Y2NiMWNkZDg2YmM0OTI4NWM2YWFjNmUxZTNhNzVkMw==
-  size: 24258645
-uaa/cloudfoundry-identity-uaa-1.5.3.war:
-  object_id: 409108e6-ad8c-45bd-9737-07d35aafe1ae
-  sha: !binary |-
-    ODcyMDkzNmY5OTUyNzBhNzU4YTYxOWZkNjgwYmNjNGVjZDFiNTk2ZQ==
-  size: 20795409
 etcd/etcd-0.3.0.tar.gz:
   object_id: b05118fc-2006-4453-9859-53a97e97383f
   sha: !binary |-
@@ -558,3 +548,13 @@ nginx/newrelic_nginx_agent.tar.gz:
   sha: !binary |-
     OThhMWIxMDQ3NTM3MTcwNTkzMmZlYTQ3NjlmOGFjMWIwNDUxMTA2Zg==
   size: 5222
+uaa/openjdk-1.7.0_51.tar.gz:
+  object_id: 67b767f3-4032-4970-8535-05dbf7c696a5
+  sha: !binary |-
+    MGY0ZDM3MDVlM2E0ZTE0NTIyNTBkZWY1N2NmYzM2YWI2Y2MzNzM1NQ==
+  size: 34729532
+uaa/openjdk-1.7.0-u40-unofficial-linux-amd64.tgz:
+  object_id: 869c365a-7c65-4454-8c09-212d01fa0fb1
+  sha: !binary |-
+    YmI0MWM2OGUwZGMyNmFkNzE2MzVkNGJmZjhkYTE2MjQ2ZGVkMTBmMA==
+  size: 42574624
