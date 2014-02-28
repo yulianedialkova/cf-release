@@ -1,82 +1,60 @@
-releases: (( merge ))
-
 meta:
-
-  releases: (( releases ))
+  releases: ~
+  environment: ~
+  networks: ~
 
   openstack: (( merge ))
-
-  provider_dns: (( merge ))
 
   bosh-network:
     cidr: (( merge ))
 
-  fog_config:
-    provider: openstack
-    openstack_auth_url: (( meta.openstack.auth_url ))
-    openstack_api_key: (( meta.openstack.api_key ))
-    openstack_username: (( meta.openstack.username ))
-    openstack_tenant: (( meta.openstack.tenant ))
-    openstack_region: (( meta.openstack.region ))
-
   stemcell:
     name: bosh-openstack-kvm-ubuntu
-    version: (( merge || "latest" ))
+    version: latest
 
-  environment: (( merge ))
-
-  networks: (( merge ))
-
-networks:
+networks: 
+  - name: floating
+    type: vip
+    cloud_properties: {}
   - name: cf1
     type: manual
     subnets:
-    - name: private
-      range: (( meta.networks.cf1.range ))
-      gateway: (( meta.networks.cf1.gateway ))
-      reserved: (( meta.networks.cf1.reserved ))
-      static: (( meta.networks.cf1.static ))
-      cloud_properties:
+      - name: private
+        range: 172.16.1.0/24
+        gateway: 172.16.1.1
+        reserved: 
+          - 172.16.1.5 - 172.16.1.10
+        static: 
+          - 172.16.1.11 - 172.16.1.20
+        cloud_properties:
         net_id: (( meta.openstack.net_id ))
-        # see http://docs.cloudfoundry.com/docs/running/deploying-cf/common/security_groups.html
         security_groups: (( meta.openstack.security_groups ))
-
-# The default Openstack deploy only uses one network. This is zeroed out to allow
-# downstream templates to work
   - name: cf2
     type: manual
     subnets:
-    - name: private
-      range: ~
-      gateway: ~
-      reserved: ~
-      static: ~
-      #-
-      cloud_properties:
+      - name: private
+        range: 172.16.15.0/24
+        gateway: 172.16.15.1 
+        reserved:
+          - 172.16.15.2 - 172.16.15.10
+        static:
+          - 172.16.15.11 - 172.16.15.20
+        cloud_properties:
         net_id: (( meta.openstack.net_id ))
-        security_groups: (( meta.openstack.security_groups ))
+        security_groups: (( meta.openstack.security_groups )) 
 
 properties:
-  template_only: ~
-
   logger_endpoint:
     port: 4443
 
-  # loggregator.blacklisted_syslog_ranges
-  # used to prevent non-user app syslogs from sending
-  # data to the user app log server. optional
   loggregator:
-    blacklisted_syslog_ranges:
-    - start: (( merge || ~ )) ##TODO this renders literally
-      end:   (( merge || ~ )) ##TODO this renders literally
-    - start: (( merge || ~ )) ##TODO this renders literally
-      end:   (( merge || ~ )) ##TODO this renders literally
+    blacklisted_syslog_ranges: (( merge || [] ))
 
-  ccng: (( merge ))
   cc: (( merge ))
 
   uaa:
     catalina_opts: -Xmx768m -XX:MaxPermSize=256m
+    clients: (( merge ))
 
   login:
     catalina_opts: -Xmx768m -XX:MaxPermSize=256m
@@ -85,9 +63,58 @@ properties:
     deny_networks:
       - 169.254.0.0/16 # Openstack Metadata endpoint
       - (( meta.bosh-network.cidr )) # BOSH network
+      - (( networks.cf1.subnets.[0].range ))
+      - (( networks.cf2.subnets.[0].range ))
 
     allow_networks:
-      - (( meta.provider_dns "/32" ))
+
+  nats:
+    address: (( jobs.nats_z1.networks.cf1.static_ips.[0] ))
+
+  ccdb_ng:
+    address: (( jobs.postgres_z1.networks.cf1.static_ips.[0] ))
+    databases:
+    - name: ccdb
+      tag: cc
+    db_scheme: postgres
+    port: 5524
+    roles:
+    - name: ccadmin
+      password: nil
+      tag: admin
+    
+  ccdb: (( ccdb_ng ))
+
+  uaadb:
+    address: (( jobs.postgres_z1.networks.cf1.static_ips.[0] ))
+    databases:
+    - name: uaadb
+      tag: uaa
+    db_scheme: postgresql
+    port: 5524
+    roles:
+    - name: uaaadmin
+      password: nil
+      tag: admin
+
+  databases: 
+    db_scheme: postgres
+    address: (( jobs.postgres_z1.networks.cf1.static_ips.[0] ))
+    port: 5524
+    roles:
+      - tag: admin
+        name: ccadmin
+        password: (( merge ))
+      - tag: admin
+        name: uaaadmin
+        password: (( merge ))
+    databases:
+      - tag: cc
+        name: ccdb
+        citext: true
+      - tag: uaa
+        name: uaadb
+        citext: true
 
 compilation:
   cloud_properties:
@@ -165,10 +192,7 @@ jobs:
         static_ips: (( static_ips(3) ))
 
   - name: hm_z1
-    instances: 1
-    networks:
-      - name: cf1
-        static_ips: (( static_ips(4) )) ## TODO: this IP is not carried downstream
+    instances: 0
 
   - name: router_z1
     instances: 1
@@ -195,12 +219,11 @@ jobs:
         static_ips: (( static_ips(9) ))
 
   - name: etcd_z1
-    instances: 1
+    instances: 2
     networks:
       - name: cf1
-        static_ips: (( static_ips(10) ))
+        static_ips: (( static_ips(10, 11) )) 
 
-  # Set *_z2 job instances to 0
   - name: logs_z2
     instances: 0
     networks:
@@ -211,7 +234,7 @@ jobs:
     instances: 0
     networks:
       - name: cf2
-        static_ips: [~]
+        static_ips: []
 
   - name: router_z2
     instances: 0
@@ -235,7 +258,7 @@ jobs:
     instances: 0
     networks:
       - name: cf2
-        static_ips: ~
+        static_ips: []
 
   - name: uaa_z2
     instances: 0
