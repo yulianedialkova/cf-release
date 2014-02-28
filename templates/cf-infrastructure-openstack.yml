@@ -12,7 +12,7 @@ meta:
     name: bosh-openstack-kvm-ubuntu
     version: latest
 
-networks: 
+networks:
   - name: floating
     type: vip
     cloud_properties: {}
@@ -22,26 +22,26 @@ networks:
       - name: private
         range: 172.16.1.0/24
         gateway: 172.16.1.1
-        reserved: 
+        reserved:
           - 172.16.1.5 - 172.16.1.10
-        static: 
+        static:
           - 172.16.1.11 - 172.16.1.20
         cloud_properties:
-        net_id: (( meta.openstack.net_id ))
-        security_groups: (( meta.openstack.security_groups ))
+          net_id: (( meta.openstack.net_id ))
+          security_groups: (( meta.openstack.security_groups ))
   - name: cf2
     type: manual
     subnets:
       - name: private
         range: 172.16.15.0/24
-        gateway: 172.16.15.1 
+        gateway: 172.16.15.1
         reserved:
           - 172.16.15.2 - 172.16.15.10
         static:
           - 172.16.15.11 - 172.16.15.20
         cloud_properties:
-        net_id: (( meta.openstack.net_id ))
-        security_groups: (( meta.openstack.security_groups )) 
+          net_id: (( meta.openstack.net_id ))
+          security_groups: (( meta.openstack.security_groups ))
 
 properties:
   logger_endpoint:
@@ -82,7 +82,7 @@ properties:
     - name: ccadmin
       password: nil
       tag: admin
-    
+
   ccdb: (( ccdb_ng ))
 
   uaadb:
@@ -97,7 +97,7 @@ properties:
       password: nil
       tag: admin
 
-  databases: 
+  databases:
     db_scheme: postgres
     address: (( jobs.postgres_z1.networks.cf1.static_ips.[0] ))
     port: 5524
@@ -219,10 +219,10 @@ jobs:
         static_ips: (( static_ips(9) ))
 
   - name: etcd_z1
-    instances: 2
+    instances: 0
     networks:
       - name: cf1
-        static_ips: (( static_ips(10, 11) )) 
+        static_ips: []
 
   - name: logs_z2
     instances: 0
