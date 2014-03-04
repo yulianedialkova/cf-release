@@ -558,3 +558,8 @@ uaa/openjdk-1.7.0-u40-unofficial-linux-amd64.tgz:
   sha: !binary |-
     YmI0MWM2OGUwZGMyNmFkNzE2MzVkNGJmZjhkYTE2MjQ2ZGVkMTBmMA==
   size: 42574624
+uaa/apache-tomcat-7.0.52.tar.gz:
+  object_id: 3156c5be-fde0-43ba-917b-6222c9c6d86e
+  sha: !binary |-
+    YWRiMTcxYzQyMGE2YjBhMDQyZTIxMDJhNzZmYjcwYWM0ZGEwNmE0NA==
+  size: 8340063
