@@ -29,6 +29,17 @@ packages:
   - syslog_aggregator
 
 properties:
+  syslog_aggregator.address:
+    description: "IP address for syslog aggregator"
+  syslog_aggregator.port:
+    description: "TCP port of syslog aggregator"
+  syslog_aggregator.all:
+    description: "Define whether forwarders should send all their syslog data to our aggregator."
+    default: false
+  syslog_aggregator.transport:
+    description: "Transport to be used when forwarding logs (tcp|udp|relp)."
+    default: "tcp"
+
   name:
     default: "vcap"
     description:
@@ -171,7 +182,7 @@ properties:
     default: 1
     description: "Passthru value for Steno logger"
 
-  ccng.max_staging_runtime:
+  ccng.staging_timeout_in_seconds:
     default: 900
     description: "Timeout for staging a droplet"
   ccng.maximum_health_check_timeout:
@@ -188,6 +199,7 @@ properties:
     default: ""
     description: "S3 Access key for staging droplets on AWS installs; Blobstore user for other IaaSs"
   ccng.staging_upload_password:
+    default: ""
     description: "S3 Secure Access Key for staging droplets on AWS installs; Blobstore password for other IaaSs"
 
   ccng.quota_definitions:
@@ -301,10 +313,6 @@ properties:
   login.url:
     description:
 
-  syslog_aggregator.address:
-    description: "The address of the syslog_aggregator job."
-  syslog_aggregator.port:
-    description: "The port used by the syslog_aggregator job."
   uaa.jwt.verification_key:
     default: ""
     description: "ssl cert defined in the manifest by the UAA, required by the cc to communicate with UAA"
