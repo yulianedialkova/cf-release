@@ -553,3 +553,8 @@ uaa/apache-tomcat-7.0.52.tar.gz:
   sha: !binary |-
     YWRiMTcxYzQyMGE2YjBhMDQyZTIxMDJhNzZmYjcwYWM0ZGEwNmE0NA==
   size: 8340063
+uaa/openjdk-1.7.0-u40-unofficial-macosx-x86_64-bundle.tgz:
+  object_id: 4cfb77f4-ea89-4d3d-85ad-2d0f3d84e676
+  sha: !binary |-
+    YWM3ZmViYzViYmZmMmRlZGY4YWRkNjI0YTcyN2E0YzBhYzZjM2QxMA==
+  size: 65991397
