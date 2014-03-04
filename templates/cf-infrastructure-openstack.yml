@@ -20,12 +20,10 @@ networks:
     type: manual
     subnets:
       - name: private
-        range: 172.16.1.0/24
-        gateway: 172.16.1.1
-        reserved:
-          - 172.16.1.5 - 172.16.1.10
-        static:
-          - 172.16.1.11 - 172.16.1.20
+        range: ~
+        gateway: ~
+        reserved: ~
+        static: ~
         cloud_properties:
           net_id: (( meta.openstack.net_id ))
           security_groups: (( meta.openstack.security_groups ))
