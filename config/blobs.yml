@@ -208,16 +208,6 @@ ruby/ruby-1.9.3-p448.tar.gz:
   sha: !binary |-
     YzdmNzM2ZTNiYzFjYTFlNjYxOWE5MTIxODM3ZGQwODQwYWFkNzdjZQ==
   size: 12559260
-uaa/openjdk-1.6.0_27.tar.gz:
-  object_id: d523e77d-9962-4233-bcdc-74a2bea30b7a
-  sha: !binary |-
-    YTQ1YjZmODliYTU0ZDIzMGNiNDc5OTJiZDgxNzdkMjExZjY0YmQ5Mw==
-  size: 28917046
-uaa/tomcat-7.0.42.tar.gz:
-  object_id: 5fbff3da-1f0d-4172-a05a-4030672ee6aa
-  sha: !binary |-
-    MDAxYTY0NjI5YTkzMTAzZDRmNTNhYzk1ZmFmM2U1MmE2MzY1N2I5NQ==
-  size: 7955948
 ? buildpack_cache/java-buildpack/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fauto-reconfiguration%2Fauto-reconfiguration-0.7.0.jar.cached
 : object_id: d47b75b6-30ac-41f9-a235-25c005f04e5c
   sha: !binary |-
