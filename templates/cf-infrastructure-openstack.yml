@@ -20,8 +20,8 @@ networks:
     type: manual
     subnets:
       - name: private
-        range: ~
-        gateway: ~
+        range: 172.16.30.0/24
+        gateway: 172.16.30.1
         reserved: ~
         static: ~
         cloud_properties:
@@ -60,9 +60,6 @@ properties:
   dea_next:
     deny_networks:
       - 169.254.0.0/16 # Openstack Metadata endpoint
-      - (( meta.bosh-network.cidr )) # BOSH network
-      - (( networks.cf1.subnets.[0].range ))
-      - (( networks.cf2.subnets.[0].range ))
 
     allow_networks:
 
