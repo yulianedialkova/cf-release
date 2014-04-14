@@ -433,5 +433,4 @@ properties:
     description: "Used for generating SSO clients for service brokers."
 
   ccng.install_buildpacks:
-    description: "Set of buildpacks to install during deploy" 
-
+    description: "Set of buildpacks to install during deploy"
