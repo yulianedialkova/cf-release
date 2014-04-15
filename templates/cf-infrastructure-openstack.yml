@@ -14,7 +14,6 @@ meta:
 
 networks: (( merge ))
 
-
 properties:
   logger_endpoint:
     port: 4443
@@ -136,6 +135,15 @@ resource_pools:
 # All values for "z2" and network "cf2" are set to null. They'll end up
 # in the final 'spiff merge' manifest with zero instances.
 jobs:
+
+  - name: ha_proxy_z1
+    instances: 2
+    networks:
+      - name: floating
+        static_ips: (( meta.floating_static_ips ))
+      - name: cf1
+        static_ips: (( static_ips(25,26) ))
+
   - name: logs_z1
     instances: 1
     networks:
