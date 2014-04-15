@@ -12,34 +12,8 @@ meta:
     name: bosh-openstack-kvm-ubuntu
     version: latest
 
-networks:
-  - name: floating
-    type: vip
-    cloud_properties: {}
-  - name: cf1
-    type: manual
-    subnets:
-      - name: private
-        range: 172.16.30.0/24
-        gateway: 172.16.30.1
-        reserved: ~
-        static: ~
-        cloud_properties:
-          net_id: (( meta.openstack.net_id ))
-          security_groups: (( meta.openstack.security_groups ))
-  - name: cf2
-    type: manual
-    subnets:
-      - name: private
-        range: 172.16.15.0/24
-        gateway: 172.16.15.1
-        reserved:
-          - 172.16.15.2 - 172.16.15.10
-        static:
-          - 172.16.15.11 - 172.16.15.20
-        cloud_properties:
-          net_id: (( meta.openstack.net_id ))
-          security_groups: (( meta.openstack.security_groups ))
+networks: (( merge ))
+
 
 properties:
   logger_endpoint:
