@@ -143,6 +143,7 @@ jobs:
         static_ips: (( meta.floating_static_ips ))
       - name: cf1
         static_ips: (( static_ips(25,26) ))
+        default: (( merge || nil ))
 
   - name: logs_z1
     instances: 1
@@ -199,7 +200,7 @@ jobs:
     instances: 0
     networks:
       - name: cf1
-        static_ips: []
+        static_ips: (( static_ips(27, 28, 29, 30) ))
 
   - name: logs_z2
     instances: 0
