@@ -21,30 +21,12 @@ meta:
     z2:
       host: (( jobs.loggregator_trafficcontroller_z2.networks.cf2.static_ips.[0] || nil ))
 
-
   nfs_server:
     address: (( jobs.nfs_z1.networks.cf1.static_ips.[0] || nil ))
     network: (( .networks.cf1.subnets.[0].range || nil ))
     share: ~
 
 jobs:
-  - name: ha_proxy_z1
-    release: (( meta.release.name ))
-    template: haproxy
-    instances: 0
-    resource_pool: router_z1
-    networks:
-      - name: cf1
-        static_ips: ~
-    properties:
-      networks: (( meta.networks.z1 ))
-      ha_proxy:
-        ssl_pem: ~
-      router:
-        servers:
-          z1: (( jobs.router_z1.networks.cf1.static_ips ))
-          z2: (( jobs.router_z2.networks.cf2.static_ips ))
-
   - name: nats_z1
     release: (( meta.release.name ))
     template: (( merge || ["nats", "nats_stream_forwarder"] ))
@@ -52,9 +34,12 @@ jobs:
     resource_pool: medium_z1
     networks:
       - name: cf1
-        static_ips: (( merge ))
+        static_ips: (( merge || nil ))
     properties:
       networks: (( meta.networks.z1 ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: nats_z2
     release: (( meta.release.name ))
@@ -63,53 +48,59 @@ jobs:
     resource_pool: medium_z2
     networks:
       - name: cf2
-        static_ips: (( merge ))
+        static_ips: (( merge || nil ))
     properties:
       networks: (( meta.networks.z2 ))
+    update:
+      serial: true
+      max_in_flight: 1
 
-  - name: logs_z1
+  - name: etcd_leader_z1
     release: (( meta.release.name ))
-    template: syslog_aggregator
-    instances: 0
+    template: etcd
+    instances: 1
+    persistent_disk: 10024
     resource_pool: medium_z1
-    persistent_disk: 100000
+    networks:
+      - name: cf1
+        static_ips:  (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: etcd_z1
+    release: (( meta.release.name ))
+    template: etcd
+    instances: 1
+    persistent_disk: 10024
+    resource_pool: medium_z1
     networks:
       - name: cf1
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z1 ))
+      leader_ip: (( jobs.etcd_leader_z1.networks.cf1.static_ips.[0] ))
+    update:
+      serial: true
+      max_in_flight: 1
 
-  - name: logs_z2
+  - name: etcd_z2
     release: (( meta.release.name ))
-    template: syslog_aggregator
-    instances: 0
+    template: etcd
+    instances: 1
+    persistent_disk: 10024
     resource_pool: medium_z2
-    persistent_disk: 100000
     networks:
       - name: cf2
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z2 ))
-
-  - name: stats_z1
-    release: (( meta.release.name ))
-    template: collector
-    instances: 1
-    resource_pool: small_z1
-    networks:
-      - name: cf1
-    properties:
-      networks: (( meta.networks.z1 ))
-
-  - name: nfs_z1
-    release: (( meta.release.name ))
-    template: debian_nfs_server
-    instances: 0
-    resource_pool: medium_z1
-    persistent_disk: 102400
-    networks:
-      - name: cf1
-        static_ips: ~
+      leader_ip: (( jobs.etcd_leader_z1.networks.cf1.static_ips.[0] ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: postgres_z1
     release: (( meta.release.name ))
@@ -122,6 +113,143 @@ jobs:
       static_ips: ~
     properties:
       db: databases
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: loggregator_z1
+    release: (( meta.release.name ))
+    template: loggregator
+    instances: 2
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: loggregator_z2
+    release: (( meta.release.name ))
+    template: loggregator
+    instances: 2
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z2 ))
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: loggregator_trafficcontroller_z1
+    release: (( meta.release.name ))
+    template: loggregator_trafficcontroller
+    instances: 1
+    resource_pool: small_z1
+    networks:
+      - name: cf1
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+      traffic_controller:
+        zone: z1
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: loggregator_trafficcontroller_z2
+    release: (( meta.release.name ))
+    template: loggregator_trafficcontroller
+    instances: 1
+    resource_pool: small_z2
+    networks:
+      - name: cf2
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z2 ))
+      traffic_controller:
+        zone: z2
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: ha_proxy_z1
+    release: (( meta.release.name ))
+    template: haproxy
+    instances: 0
+    resource_pool: router_z1
+    networks: (( merge || nil ))
+    properties:
+      networks: (( meta.networks.z1 ))
+      ha_proxy:
+        ssl_pem: ~
+      router:
+        servers:
+          z1: (( jobs.router_z1.networks.cf1.static_ips ))
+          z2: (( jobs.router_z2.networks.cf2.static_ips ))
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: logs_z1
+    release: (( meta.release.name ))
+    template: syslog_aggregator
+    instances: 0
+    resource_pool: medium_z1
+    persistent_disk: 100000
+    networks:
+      - name: cf1
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: logs_z2
+    release: (( meta.release.name ))
+    template: syslog_aggregator
+    instances: 0
+    resource_pool: medium_z2
+    persistent_disk: 100000
+    networks:
+      - name: cf2
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z2 ))
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: stats_z1
+    release: (( meta.release.name ))
+    template: collector
+    instances: 1
+    resource_pool: small_z1
+    networks:
+      - name: cf1
+    properties:
+      networks: (( meta.networks.z1 ))
+    update:
+      serial: true
+      max_in_flight: 1
+
+  - name: nfs_z1
+    release: (( meta.release.name ))
+    template: debian_nfs_server
+    instances: 0
+    resource_pool: medium_z1
+    persistent_disk: 102400
+    networks:
+      - name: cf1
+        static_ips: ~
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: uaa_z1
     release: (( meta.release.name ))
@@ -132,6 +260,9 @@ jobs:
       - name: cf1
     properties:
       networks: (( meta.networks.z1 ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: uaa_z2
     release: (( meta.release.name ))
@@ -142,6 +273,9 @@ jobs:
       - name: cf2
     properties:
       networks: (( meta.networks.z2 ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: login_z1
     release: (( meta.release.name ))
@@ -152,6 +286,9 @@ jobs:
       - name: cf1
     properties:
       networks: (( meta.networks.z1 ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: api_z1
     release: (( meta.release.name ))
@@ -167,6 +304,9 @@ jobs:
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z1.host ))
       nfs_server: (( meta.nfs_server ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: api_z2
     release: (( meta.release.name ))
@@ -182,6 +322,9 @@ jobs:
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z2.host ))
       nfs_server: (( meta.nfs_server ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: clock_global
     release: (( meta.release.name ))
@@ -198,6 +341,9 @@ jobs:
         host: (( meta.loggregator_endpoint.z1.host ))
       ccng:
         process_group: clock
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: api_worker_z1
     release: (( meta.release.name ))
@@ -215,6 +361,9 @@ jobs:
       ccng:
         process_group: worker
       nfs_server: (( meta.nfs_server ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: api_worker_z2
     release: (( meta.release.name ))
@@ -232,6 +381,9 @@ jobs:
       ccng:
         process_group: worker
       nfs_server: (( meta.nfs_server ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: hm_z1
     release: (( meta.release.name ))
@@ -242,44 +394,9 @@ jobs:
       - name: cf1
     properties:
       networks: (( meta.networks.z1 ))
-
-  - name: etcd_leader_z1
-    release: (( meta.release.name ))
-    template: etcd
-    instances: 1
-    persistent_disk: 10024
-    resource_pool: medium_z1
-    networks:
-      - name: cf1
-        static_ips:  (( merge ))
-    properties:
-      networks: (( meta.networks.z1 ))
-
-  - name: etcd_z1
-    release: (( meta.release.name ))
-    template: etcd
-    instances: 1
-    persistent_disk: 10024
-    resource_pool: medium_z1
-    networks:
-      - name: cf1
-        static_ips: (( merge ))
-    properties:
-      networks: (( meta.networks.z1 ))
-      leader_ip: (( jobs.etcd_leader_z1.networks.cf1.static_ips.[0] ))
-
-  - name: etcd_z2
-    release: (( meta.release.name ))
-    template: etcd
-    instances: 1
-    persistent_disk: 10024
-    resource_pool: medium_z2
-    networks:
-      - name: cf2
-        static_ips: (( merge ))
-    properties:
-      networks: (( meta.networks.z2 ))
-      leader_ip: (( jobs.etcd_leader_z1.networks.cf1.static_ips.[0] ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: hm9000_z1
     release: (( meta.release.name ))
@@ -291,6 +408,9 @@ jobs:
     properties:
       networks: (( meta.networks.z1 ))
       etcd_ips: (( jobs.etcd_leader_z1.networks.cf1.static_ips jobs.etcd_z1.networks.cf1.static_ips jobs.etcd_z2.networks.cf2.static_ips ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: hm9000_z2
     release: (( meta.release.name ))
@@ -302,13 +422,14 @@ jobs:
     properties:
       networks: (( meta.networks.z2 ))
       etcd_ips: (( jobs.etcd_leader_z1.networks.cf1.static_ips jobs.etcd_z1.networks.cf1.static_ips jobs.etcd_z2.networks.cf2.static_ips ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: runner_z1
     release: (( meta.release.name ))
     template: (( merge || ["dea_next", "dea_logging_agent"] ))
     instances: 1
-    update:
-      max_in_flight: 1
     resource_pool: runner_z1
     networks:
       - name: cf1
@@ -317,13 +438,14 @@ jobs:
       networks: (( meta.networks.z1 ))
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z1.host ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: runner_z2
     release: (( meta.release.name ))
     template: (( merge || ["dea_next", "dea_logging_agent"] ))
     instances: 1
-    update:
-      max_in_flight: 1
     resource_pool: runner_z2
     networks:
       - name: cf2
@@ -332,54 +454,9 @@ jobs:
       networks: (( meta.networks.z2 ))
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z2.host ))
-
-  - name: loggregator_z1
-    release: (( meta.release.name ))
-    template: loggregator
-    instances: 2
-    resource_pool: medium_z1
-    networks:
-      - name: cf1
-        static_ips: (( merge ))
-    properties:
-      networks: (( meta.networks.z1 ))
-
-  - name: loggregator_z2
-    release: (( meta.release.name ))
-    template: loggregator
-    instances: 2
-    resource_pool: medium_z2
-    networks:
-      - name: cf2
-        static_ips: (( merge ))
-    properties:
-      networks: (( meta.networks.z2 ))
-
-  - name: loggregator_trafficcontroller_z1
-    release: (( meta.release.name ))
-    template: loggregator_trafficcontroller
-    instances: 1
-    resource_pool: small_z1
-    networks:
-      - name: cf1
-        static_ips: (( merge ))
-    properties:
-      networks: (( meta.networks.z1 ))
-      traffic_controller:
-        zone: z1
-
-  - name: loggregator_trafficcontroller_z2
-    release: (( meta.release.name ))
-    template: loggregator_trafficcontroller
-    instances: 1
-    resource_pool: small_z2
-    networks:
-      - name: cf2
-        static_ips: (( merge ))
-    properties:
-      networks: (( meta.networks.z2 ))
-      traffic_controller:
-        zone: z2
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: router_z1
     release: (( meta.release.name ))
@@ -393,6 +470,9 @@ jobs:
       networks: (( meta.networks.z1 ))
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z1.host ))
+    update:
+      serial: true
+      max_in_flight: 1
 
   - name: router_z2
     release: (( meta.release.name ))
@@ -406,6 +486,9 @@ jobs:
       networks: (( meta.networks.z2 ))
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z2.host ))
+    update:
+      serial: true
+      max_in_flight: 1
 
 properties:
   domain: (( merge ))
