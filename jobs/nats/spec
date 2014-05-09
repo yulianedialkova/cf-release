@@ -3,14 +3,10 @@ name: nats
 templates:
   nats_ctl.erb: bin/nats_ctl
   nats.conf.erb: config/nats.conf
-  old_nats.yml.erb: config/old_nats.yml
-  old_nats_ctl: bin/old_nats_ctl
   syslog_forwarder.conf.erb: config/syslog_forwarder.conf
 packages:
   - common
   - gnatsd
-  - nats
-  - ruby
   - syslog_aggregator
 properties:
   syslog_aggregator.address:
@@ -25,15 +21,11 @@ properties:
     default: "tcp"
 
   networks.apps:
-    description:
-  nats.use_gnatsd:
-    description: "Using gnatsd or ruby nats server"
+    description: "NATS network information"
   nats.user:
     description: "Username for server authentication."
   nats.password:
     description: "Password for server authentication."
-  nats.address:
-    description: "NATS address"
   nats.port:
     description: "The port for the NATS server to listen on."
   nats.authorization_timeout:
@@ -47,3 +39,9 @@ properties:
   nats.trace:
     description: "Enable trace logging output."
     default: false
+  nats.monitor_port:
+    description: "Port for varz and connz monitoring. 0 means disabled."
+    default: 0
+  nats.prof_port:
+    description: "Port for pprof. 0 means disabled."
+    default: 0

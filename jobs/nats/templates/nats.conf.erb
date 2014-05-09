@@ -1,6 +1,8 @@
 <% self_ip = spec.networks.send(properties.networks.apps).ip %>
 net: "<%= self_ip %>"
 port: <%= p("nats.port") %>
+prof_port: <%= p("nats.prof_port") %>
+monitor_port: <%= p("nats.monitor_port") %>
 
 pid_file: "/var/vcap/sys/run/nats/nats.pid"
 
@@ -25,8 +27,8 @@ cluster {
   }
 
   routes = [
-    <% (p("nats.machines") - [self_ip]).each do |ip| %>
-    nats-route://<%= p("nats.user") %>:<%= p("nats.password") %>@<%= ip %>:<%= p("nats.port") + 1 %>
+    <% (p("nats.machines") - [self_ip]).each do |address| %>
+    nats-route://<%= p("nats.user") %>:<%= p("nats.password") %>@<%= address %>:<%= p("nats.port") + 1 %>
     <% end %>
   ]
 }

@@ -23,6 +23,9 @@ properties:
     description: "Transport to be used when forwarding logs (tcp|udp|relp)."
     default: "tcp"
 
+  router.port:
+    description: "Listening Port for Router"
+    default: 80
   router.status.port:
     description: "Port for the Router varz/status endpoint."
     default: 8080
@@ -33,8 +36,6 @@ properties:
   nats.user:
     description:
   nats.password:
-    description:
-  nats.address:
     description:
   nats.port:
     description:
@@ -58,3 +59,5 @@ properties:
     default: 3456
   loggregator_endpoint.shared_secret:
     description: "The key used to sign log messages"
+  networks.apps:
+    description: "GoRouter network information."

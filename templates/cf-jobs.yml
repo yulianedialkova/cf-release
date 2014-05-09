@@ -27,15 +27,27 @@ meta:
     network: (( .networks.cf1.subnets.[0].range || nil ))
     share: ~
 
+  api_templates:
+  - name: cloud_controller_ng
+
+  nats_templates:
+  - name: nats
+  - name: nats_stream_forwarder
+
+  dea_templates:
+  - name: dea_next
+  - name: dea_logging_agent
+
 jobs:
   - name: ha_proxy_z1
     release: (( meta.release.name ))
     template: haproxy
     instances: 0
     resource_pool: router_z1
-    networks:
+    default_networks:
       - name: cf1
         static_ips: ~
+    networks: (( merge || default_networks ))
     properties:
       networks: (( meta.networks.z1 ))
       ha_proxy:
@@ -47,7 +59,7 @@ jobs:
 
   - name: nats_z1
     release: (( meta.release.name ))
-    template: (( merge || ["nats", "nats_stream_forwarder"] ))
+    templates: (( merge || meta.nats_templates ))
     instances: 1
     resource_pool: medium_z1
     networks:
@@ -58,7 +70,7 @@ jobs:
 
   - name: nats_z2
     release: (( meta.release.name ))
-    template: (( merge || ["nats", "nats_stream_forwarder"] ))
+    templates: (( merge || meta.nats_templates ))
     instances: 1
     resource_pool: medium_z2
     networks:
@@ -153,9 +165,19 @@ jobs:
     properties:
       networks: (( meta.networks.z1 ))
 
+  - name: login_z2
+    release: (( meta.release.name ))
+    template: login
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+    properties:
+      networks: (( meta.networks.z2 ))
+
   - name: api_z1
     release: (( meta.release.name ))
-    template: cloud_controller_ng
+    templates: (( merge || meta.api_templates ))
     instances: 1
     resource_pool: large_z1
     persistent_disk: 0
@@ -170,7 +192,7 @@ jobs:
 
   - name: api_z2
     release: (( meta.release.name ))
-    template: cloud_controller_ng
+    templates: (( merge || meta.api_templates ))
     instances: 1
     resource_pool: large_z2
     persistent_disk: 0
@@ -185,7 +207,7 @@ jobs:
 
   - name: clock_global
     release: (( meta.release.name ))
-    template: cloud_controller_ng
+    template: cloud_controller_clock
     instances: 1
     resource_pool: medium_z1
     persistent_disk: 0
@@ -196,12 +218,10 @@ jobs:
       networks: (( meta.networks.z1 ))
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z1.host ))
-      ccng:
-        process_group: clock
 
   - name: api_worker_z1
     release: (( meta.release.name ))
-    template: cloud_controller_ng
+    template: cloud_controller_worker
     instances: 1
     resource_pool: small_z1
     persistent_disk: 0
@@ -212,13 +232,11 @@ jobs:
       networks: (( meta.networks.z1 ))
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z1.host ))
-      ccng:
-        process_group: worker
       nfs_server: (( meta.nfs_server ))
 
   - name: api_worker_z2
     release: (( meta.release.name ))
-    template: cloud_controller_ng
+    template: cloud_controller_worker
     instances: 1
     resource_pool: small_z2
     persistent_disk: 0
@@ -229,36 +247,16 @@ jobs:
       networks: (( meta.networks.z2 ))
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z2.host ))
-      ccng:
-        process_group: worker
       nfs_server: (( meta.nfs_server ))
-
-  - name: hm_z1
-    release: (( meta.release.name ))
-    template: health_manager_next
-    instances: 0
-    resource_pool: medium_z1
-    networks:
-      - name: cf1
-    properties:
-      networks: (( meta.networks.z1 ))
-
-  - name: etcd_leader_z1
-    release: (( meta.release.name ))
-    template: etcd
-    instances: 1
-    persistent_disk: 10024
-    resource_pool: medium_z1
-    networks:
-      - name: cf1
-        static_ips:  (( merge ))
-    properties:
-      networks: (( meta.networks.z1 ))
 
   - name: etcd_z1
     release: (( meta.release.name ))
-    template: etcd
-    instances: 1
+    templates:
+      - name: etcd
+        release: (( meta.release.name ))
+      - name: etcd_metrics_server
+        release: (( meta.release.name ))
+    instances: 2
     persistent_disk: 10024
     resource_pool: medium_z1
     networks:
@@ -266,11 +264,14 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z1 ))
-      leader_ip: (( jobs.etcd_leader_z1.networks.cf1.static_ips.[0] ))
 
   - name: etcd_z2
     release: (( meta.release.name ))
-    template: etcd
+    templates:
+      - name: etcd
+        release: (( meta.release.name ))
+      - name: etcd_metrics_server
+        release: (( meta.release.name ))
     instances: 1
     persistent_disk: 10024
     resource_pool: medium_z2
@@ -279,7 +280,6 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z2 ))
-      leader_ip: (( jobs.etcd_leader_z1.networks.cf1.static_ips.[0] ))
 
   - name: hm9000_z1
     release: (( meta.release.name ))
@@ -290,7 +290,6 @@ jobs:
       - name: cf1
     properties:
       networks: (( meta.networks.z1 ))
-      etcd_ips: (( jobs.etcd_leader_z1.networks.cf1.static_ips jobs.etcd_z1.networks.cf1.static_ips jobs.etcd_z2.networks.cf2.static_ips ))
 
   - name: hm9000_z2
     release: (( meta.release.name ))
@@ -301,11 +300,10 @@ jobs:
       - name: cf2
     properties:
       networks: (( meta.networks.z2 ))
-      etcd_ips: (( jobs.etcd_leader_z1.networks.cf1.static_ips jobs.etcd_z1.networks.cf1.static_ips jobs.etcd_z2.networks.cf2.static_ips ))
 
   - name: runner_z1
     release: (( meta.release.name ))
-    template: (( merge || ["dea_next", "dea_logging_agent"] ))
+    templates: (( merge || meta.dea_templates ))
     instances: 1
     update:
       max_in_flight: 1
@@ -320,7 +318,7 @@ jobs:
 
   - name: runner_z2
     release: (( meta.release.name ))
-    template: (( merge || ["dea_next", "dea_logging_agent"] ))
+    templates: (( merge || meta.dea_templates ))
     instances: 1
     update:
       max_in_flight: 1
@@ -407,7 +405,27 @@ jobs:
       loggregator_endpoint:
         host: (( meta.loggregator_endpoint.z2.host ))
 
+  - name: acceptance_tests
+    release: (( meta.release.name ))
+    template: acceptance-tests
+    instances: 1
+    resource_pool: small_errand
+    lifecycle: errand
+    networks:
+      - name: cf1
+
+  - name: smoke_tests
+    release: (( meta.release.name ))
+    template: smoke-tests
+    instances: 1
+    resource_pool: small_errand
+    lifecycle: errand
+    networks:
+      - name: cf1
+
 properties:
+  support_address: (( merge || "http://support.cloudfoundry.com" ))
+  description: (( merge || "Cloud Foundry sponsored by Pivotal" ))
   domain: (( merge ))
   ssl:
     skip_cert_verify: (( merge || false ))
@@ -425,9 +443,19 @@ properties:
     address: (( jobs.nats_z2.networks.cf2.static_ips.[0] ))
     port: 4222
     machines: (( jobs.nats_z1.networks.cf1.static_ips jobs.nats_z2.networks.cf2.static_ips ))
-    use_gnatsd: (( merge || true ))
     debug: false
     trace: false
+    monitor_port: 0
+    prof_port: 0
+
+  etcd:
+    machines: (( jobs.etcd_z1.networks.cf1.static_ips jobs.etcd_z2.networks.cf2.static_ips ))
+
+  etcd_metrics_server:
+    nats:
+      machines: (( .properties.nats.machines ))
+      username: (( .properties.nats.user ))
+      password: (( .properties.nats.password ))
 
   dea_next:
     memory_mb: (( merge ))
@@ -441,6 +469,8 @@ properties:
     kernel_network_tuning_enabled: true
     directory_server_protocol: https
     evacuation_bail_out_time_in_seconds: 600
+    logging_level: debug
+    staging_disk_limit_mb: 4096
 
   loggregator_endpoint:
     shared_secret: (( merge ))
@@ -487,3 +517,8 @@ properties:
     use_tsdb: false
 
   opentsdb: (( merge || nil ))
+
+  acceptance_tests: (( merge || nil ))
+
+  smoke_tests: (( merge || nil ))
+

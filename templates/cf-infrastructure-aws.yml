@@ -148,6 +148,11 @@ resource_pools:
       availability_zone: (( meta.zones.z2 ))
       elbs: (( merge || ["cfrouter"] ))
 
+  - name: small_errand
+    cloud_properties:
+      instance_type: m1.small
+      availability_zone: (( meta.zones.z1 ))
+
 
 # set up static IPs
 jobs:
@@ -211,17 +216,11 @@ jobs:
       - name: cf2
         static_ips: (( static_ips(24) ))
 
-  - name: etcd_leader_z1
-    instances: 1
-    networks:
-      - name: cf1
-        static_ips: (( static_ips(9) ))
-
   - name: etcd_z1
-    instances: 1
+    instances: 2
     networks:
       - name: cf1
-        static_ips: (( static_ips(10) ))
+        static_ips: (( static_ips(10, 25) ))
 
   - name: etcd_z2
     instances: 1

@@ -48,14 +48,18 @@ properties:
     description: "This property is not used by the job itself, but has the desired effect of restarting the loggregator jobs when the property changes on bosh deployment. See loggregator_trafficcontroller job spec for a description."
   loggregator_endpoint.shared_secret:
     description: "Shared secret used to verify cryptographically signed loggregator messages"
+  etcd.machines:
+    description: "IPs pointing to the ETCD cluster"
   nats.user:
     description: "Username for cc client to connect to NATS"
   nats.password:
     description: "Password for cc client to connect to NATS"
-  nats.address:
-    description: "IP address of Cloud Foundry NATS server"
+  nats.machines:
+    description: "IP addresses of Cloud Foundry NATS servers"
   nats.port:
     description: "IP port of Cloud Foundry NATS server"
   ssl.skip_cert_verify:
     description: "when connecting over TLS, don't verify certificates"
     default: false
+  networks.apps:
+    description: "Loggregator network information."

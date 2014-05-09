@@ -32,3 +32,8 @@ properties:
   router.servers.z2:
     default:
     description:
+  router.port:
+    default: 80
+    description: "Listening port for Router"
+  networks.apps:
+    description: "HAProxy network information."

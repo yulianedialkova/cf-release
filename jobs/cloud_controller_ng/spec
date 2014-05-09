@@ -3,11 +3,11 @@ name: cloud_controller_ng
 templates:
   nginx_ctl.erb: bin/nginx_ctl
   nginx.conf.erb: config/nginx.conf
+  drain.rb: bin/drain
   mime.types: config/mime.types
-  cloud_controller_ng.yml.erb: config/cloud_controller_ng.yml
-  cloud_controller_ng_ctl.erb: bin/cloud_controller_ng_ctl
-  cloud_controller_jobs_ctl.erb: bin/cloud_controller_jobs_ctl
-  cloud_controller_clock_ctl.erb: bin/cloud_controller_clock_ctl
+  cloud_controller_api.yml.erb: config/cloud_controller_ng.yml
+  cloud_controller_api_ctl.erb: bin/cloud_controller_ng_ctl
+  cloud_controller_api_worker_ctl.erb: bin/cloud_controller_worker_ctl
   handle_nfs_or_local_blobstore.sh.erb: bin/handle_nfs_or_local_blobstore.sh
   stacks.yml.erb: config/stacks.yml
   syslog_forwarder.conf.erb: config/syslog_forwarder.conf
@@ -27,6 +27,11 @@ packages:
   - sqlite
   - ruby
   - syslog_aggregator
+  - buildpack_java
+  - buildpack_java_offline
+  - buildpack_ruby
+  - buildpack_nodejs
+  - buildpack_go
 
 properties:
   ssl.skip_cert_verify:
@@ -59,9 +64,6 @@ properties:
   description:
     default: "Cloud Foundry sponsored by Pivotal"
     description:
-  api_version:
-    default: "2.0.0"
-    description:
   domain:
     description: "domain where cloud_controller will listen (api.domain) often the same as the system domain"
   system_domain:
@@ -73,14 +75,12 @@ properties:
     description: "Array of domains for user apps (example: 'user.app.space.foo', a user app called 'neat' will listen at 'http://neat.user.app.space.foo')"
 
   networks.apps:
-    description: "TODO"
+    description: "Cloud controller network information."
 
   nats.user:
     description: "Username for cc client to connect to NATS"
   nats.password:
     description: "Password for cc client to connect to NATS"
-  nats.address:
-    description: "IP address of Cloud Foundry NATS server"
   nats.port:
     description: "IP port of Cloud Foundry NATS server"
   nats.machines:
@@ -149,21 +149,19 @@ properties:
     description: "URL for the support attribute in the /info endpoint"
   ccng.info.description:
     description: "free form description for attribute in the /info endpoint"
-  ccng.api_version:
-    description: "API version for cloud_controller. Tells clienets what version to speak to this cloud_controller"
 
   ccng.directories.tmpdir:
     default: "/var/vcap/data/cloud_controller_ng/tmp"
 
+  ccng.external_protocol:
+    default: "http"
+    description: "The protocol used to access the CC API from an external entity"
   ccng.external_host:
     default: "api"
     description: "Host part of the cloud_controller api URI, will be joined with value of 'domain'"
   ccng.cc_partition:
     default: "default"
     description: "Deprecated. Defines a 'partition' for the health_manager job"
-  ccng.bootstrap_admin_email:
-    default: "admin@example.com"
-    description: "Deprecated."
 
   ccng.bulk_api_user:
     default: "bulk_api"
@@ -244,6 +242,9 @@ properties:
   ccng.packages.app_package_directory_key:
     description: "Directory (bucket) used store app packages.  It does not have be pre-created."
     default: "cc-packages"
+  ccng.packages.max_package_size:
+    description: "Maximum size of application package"
+    default: 1073741824
   ccng.packages.fog_connection:
     description: "Fog connection hash"
   ccng.packages.cdn.uri:
@@ -363,7 +364,7 @@ properties:
     default: 3
     description: "The threshold of crashes after which the app is marked as flapping"
   ccng.client_max_body_size:
-    default: "256M"
+    default: "1536M"
     description: "Maximum body size for nginx"
 
   ccng.disable_custom_buildpacks:
@@ -403,20 +404,19 @@ properties:
     default: "off"
     description: "NewRelic's SQL statement recording mode: [off | obfuscated | raw]"
 
-  ccng.process_group:
-    default: cloud_controller
-    description: "Determines what processes to run for the job"
   ccng.jobs.local.number_of_workers:
     default: 2
-    description: "Number of local cloud_controller_jobs workers"
+    description: "Number of local cloud_controller_worker workers"
   ccng.jobs.generic.number_of_workers:
     default: 1
-    description: "Number of generic cloud_controller_jobs workers"
+    description: "Number of generic cloud_controller_worker workers"
 
   dea_next.staging_memory_limit_mb:
     description: "Memory limit in mb for staging tasks"
     default: 1024
-
+  dea_next.staging_disk_limit_mb:
+    description: "Disk limit in mb for staging tasks"
+    default: 4096
   ccng.renderer.max_results_per_page:
     description: "Maximum number of results returned per page"
     default: 100
@@ -429,3 +429,10 @@ properties:
 
   uaa.clients.cc_service_broker_client.secret:
     description: "Used for generating SSO clients for service brokers."
+
+  ccng.install_buildpacks:
+    description: "Set of buildpacks to install during deploy" 
+  ccng.app_bits_upload_grace_period_in_seconds:
+    description: "Extra token expiry time while uploading big apps."
+    default: 1200
+

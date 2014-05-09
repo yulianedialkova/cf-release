@@ -61,7 +61,7 @@ properties:
     default: https://network.gopivotal.com/login
   login.links.signup-network:
     description: URL for requesting to signup/register for an account at Pivotal Network
-    default: https://network.gopivotal.com/users/new
+    default: https://network.gopivotal.com/registrations/new
   login.port:
     default: 8080
     description:
@@ -75,8 +75,6 @@ properties:
     description: "The https_proxy accross the VMs"
   env.no_proxy:
     description: "Set No_Proxy accross the VMs"
-  nats.address:
-    description: "IP address of NATS server"
   nats.password:
     description: "Password for NATS login"
   nats.port:
@@ -86,7 +84,7 @@ properties:
   nats.machines:
     description: "IP of each NATS cluster member."
   networks.apps:
-    description: "The App network name"
+    description: "Login network name"
   uaa.clients.login.secret:
     description:
   uaa.dump_requests:
@@ -130,7 +128,7 @@ properties:
     description:
     default: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
   login.spring_profiles:
-    description: "The spring bean profile to use for the spring configuration files. Only options at this time is ldap for additional profile. Default is empty. Setting this to ldap requires the uaa.login.addnew property to be set to true on the UAA."
+    description: "The spring bean profile to use for the spring configuration files. Only options at this time is ldap for additional profile. Default is empty."
   login.ldap.profile_type:
     description: "The file to be used for configuring the LDAP authentication. options are simple-bind, search-and-bind and search-and-compare"
   login.ldap.url:

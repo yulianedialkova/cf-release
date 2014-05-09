@@ -72,6 +72,12 @@ resource_pools:
       disk: 2048
       cpu: 1
 
+  - name: small_errand
+    cloud_properties:
+      ram: 1024
+      disk: 2048
+      cpu: 1
+
 
 jobs:
   - name: logs_z1
@@ -154,17 +160,11 @@ jobs:
       - name: cf1
         static_ips: (( static_ips(3) ))
 
-  - name: etcd_leader_z1
-    instances: 1
-    networks:
-      - name: cf1
-        static_ips: (( static_ips(13) ))
-
   - name: etcd_z1
-    instances: 1
+    instances: 2
     networks:
       - name: cf1
-        static_ips: (( static_ips(14) ))
+        static_ips: (( static_ips(14, 15) ))
 
   - name: etcd_z2
     instances: 1

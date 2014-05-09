@@ -11,7 +11,9 @@ name: (( meta.environment ))
 
 director_uuid: (( merge ))
 
-releases: (( merge ))
+releases:
+  - name: cf
+    version: latest
 
 networks: (( merge ))
 
@@ -30,6 +32,7 @@ update:
   max_in_flight: 1
   canary_watch_time: 30000-600000
   update_watch_time: 5000-600000
+  serial: true
 
 resource_pools:
   - name: small_z1
@@ -88,6 +91,12 @@ resource_pools:
 
   - name: router_z2
     network: cf2
+    size: (( auto ))
+    stemcell: (( meta.stemcell ))
+    cloud_properties: (( merge ))
+
+  - name: small_errand
+    network: cf1
     size: (( auto ))
     stemcell: (( meta.stemcell ))
     cloud_properties: (( merge ))

@@ -7,12 +7,9 @@
 [submodule "src/dea_next"]
   path = src/dea_next
   url = https://github.com/cloudfoundry/dea_ng.git
-[submodule "src/health_manager_next"]
-  path = src/health_manager_next
-  url = https://github.com/cloudfoundry/health_manager.git
-[submodule "src/router"]
-  path = src/router
-  url = https://github.com/cloudfoundry/router.git
+[submodule "src/gorouter"]
+	path = src/gorouter
+	url = git@github.com:cloudfoundry/gorouter.git
 [submodule "src/stager"]
   path = src/stager
   url = https://github.com/cloudfoundry/stager.git
@@ -31,69 +28,69 @@
 [submodule "src/collector"]
   path = src/collector
   url = https://github.com/cloudfoundry/collector.git
-[submodule "src/gorouter/src/github.com/cloudfoundry/gorouter"]
-	path = src/gorouter/src/github.com/cloudfoundry/gorouter
-	url = https://github.com/cloudfoundry/gorouter.git
-[submodule "src/gorouter/src/github.com/cloudfoundry/yagnats"]
-	path = src/gorouter/src/github.com/cloudfoundry/yagnats
-	url = https://github.com/cloudfoundry/yagnats.git
-[submodule "src/gorouter/src/github.com/cloudfoundry/go_cfmessagebus"]
-	path = src/gorouter/src/github.com/cloudfoundry/go_cfmessagebus
-	url = https://github.com/cloudfoundry/go_cfmessagebus.git
-[submodule "src/gorouter/src/github.com/cloudfoundry/gosteno"]
-	path = src/gorouter/src/github.com/cloudfoundry/gosteno
-	url = https://github.com/cloudfoundry/gosteno.git
-[submodule "src/gorouter/src/github.com/rcrowley/go-metrics"]
-	path = src/gorouter/src/github.com/rcrowley/go-metrics
-	url = https://github.com/rcrowley/go-metrics.git
-[submodule "src/gorouter/src/github.com/nu7hatch/gouuid"]
-	path = src/gorouter/src/github.com/nu7hatch/gouuid
-	url = https://github.com/nu7hatch/gouuid.git
 [submodule "src/narc/src/github.com/cloudfoundry/gibson"]
-	path = src/narc/src/github.com/cloudfoundry/gibson
-	url = https://github.com/cloudfoundry/gibson.git
+  path = src/narc/src/github.com/cloudfoundry/gibson
+  url = https://github.com/cloudfoundry/gibson.git
 [submodule "src/narc/src/github.com/cloudfoundry/go_cfmessagebus"]
-	path = src/narc/src/github.com/cloudfoundry/go_cfmessagebus
-	url = https://github.com/cloudfoundry/go_cfmessagebus.git
+  path = src/narc/src/github.com/cloudfoundry/go_cfmessagebus
+  url = https://github.com/cloudfoundry/go_cfmessagebus.git
 [submodule "src/narc/src/github.com/cloudfoundry/gordon"]
-	path = src/narc/src/github.com/cloudfoundry/gordon
-	url = https://github.com/cloudfoundry/gordon.git
+  path = src/narc/src/github.com/cloudfoundry/gordon
+  url = https://github.com/cloudfoundry/gordon.git
 [submodule "src/narc/src/github.com/cloudfoundry/narc"]
-	path = src/narc/src/github.com/cloudfoundry/narc
-	url = https://github.com/cloudfoundry/narc.git
+  path = src/narc/src/github.com/cloudfoundry/narc
+  url = https://github.com/cloudfoundry/narc.git
 [submodule "src/narc/src/github.com/cloudfoundry/yagnats"]
-	path = src/narc/src/github.com/cloudfoundry/yagnats
-	url = https://github.com/cloudfoundry/yagnats.git
+  path = src/narc/src/github.com/cloudfoundry/yagnats
+  url = https://github.com/cloudfoundry/yagnats.git
 [submodule "src/narc/src/github.com/kr/pty"]
-	path = src/narc/src/github.com/kr/pty
-	url = https://github.com/kr/pty.git
+  path = src/narc/src/github.com/kr/pty
+  url = https://github.com/kr/pty.git
 [submodule "src/narc/src/github.com/kylelemons/go-gypsy"]
-	path = src/narc/src/github.com/kylelemons/go-gypsy
-	url = https://github.com/kylelemons/go-gypsy.git
+  path = src/narc/src/github.com/kylelemons/go-gypsy
+  url = https://github.com/kylelemons/go-gypsy.git
 [submodule "src/narc/src/github.com/nu7hatch/gouuid"]
-	path = src/narc/src/github.com/nu7hatch/gouuid
-	url = https://github.com/nu7hatch/gouuid.git
-[submodule "src/gorouter/src/github.com/cloudfoundry/loggregatorlib"]
-	path = src/gorouter/src/github.com/cloudfoundry/loggregatorlib
-	url = https://github.com/cloudfoundry/loggregatorlib.git
-[submodule "src/gorouter/src/code.google.com/p/gogoprotobuf"]
-	path = src/gorouter/src/code.google.com/p/gogoprotobuf
-	url = https://code.google.com/p/gogoprotobuf/
+  path = src/narc/src/github.com/nu7hatch/gouuid
+  url = https://github.com/nu7hatch/gouuid.git
 [submodule "shared"]
-	path = shared
-	url = https://github.com/cloudfoundry/shared-release-packages.git
+  path = shared
+  url = https://github.com/cloudfoundry/shared-release-packages.git
 [submodule "src/hm9000"]
-	path = src/hm9000
-	url = https://github.com/cloudfoundry/hm-workspace.git
+  path = src/hm9000
+  url = https://github.com/cloudfoundry/hm-workspace.git
 [submodule "src/gnatsd"]
-	path = src/gnatsd
-	url = https://github.com/apcera/gnatsd.git
+  path = src/gnatsd
+  url = https://github.com/apcera/gnatsd.git
 [submodule "src/loggregator"]
-	path = src/loggregator
-	url = https://github.com/cloudfoundry/loggregator
+  path = src/loggregator
+  url = https://github.com/cloudfoundry/loggregator
 [submodule "src/acceptance-tests"]
-	path = src/acceptance-tests
-	url = https://github.com/cloudfoundry/cf-acceptance-tests
+  path = src/acceptance-tests
+  url = https://github.com/cloudfoundry/cf-acceptance-tests
 [submodule "packages/ruby"]
-	path = packages/ruby
-	url = https://github.com/cloudfoundry/ruby-package
+  path = packages/ruby
+  url = https://github.com/cloudfoundry/ruby-package
+[submodule "src/uaa"]
+  path = src/uaa
+  url = https://github.com/cloudfoundry/uaa.git
+[submodule "src/login"]
+  path = src/login
+  url = https://github.com/cloudfoundry/login-server.git
+[submodule "src/etcd-metrics-server"]
+  path = src/etcd-metrics-server
+  url = https://github.com/cloudfoundry-incubator/etcd-metrics-server.git
+[submodule "src/buildpacks/nodejs"]
+  path = src/buildpacks/nodejs
+  url = https://github.com/cloudfoundry/heroku-buildpack-nodejs.git
+[submodule "src/buildpacks/ruby"]
+  path = src/buildpacks/ruby
+  url = https://github.com/cloudfoundry/heroku-buildpack-ruby.git
+[submodule "src/etcd"]
+  path = src/etcd
+  url = https://github.com/coreos/etcd.git
+[submodule "src/buildpacks/go"]
+  path = src/buildpacks/go
+  url = https://github.com/cloudfoundry-incubator/cf-buildpack-go.git
+[submodule "src/smoke-tests"]
+  path = src/smoke-tests
+  url = https://github.com/cloudfoundry-incubator/cf-smoke-tests

@@ -6,7 +6,6 @@ meta:
        total_services: 100
        non_basic_services_allowed: true
        total_routes: 1000
-       trial_db_allowed: true
 
 properties:
   domain: (( merge ))
@@ -43,13 +42,11 @@ properties:
 
     billing_event_writing_enabled: true
 
-    process_group: cloud_controller
-
     hm9000_noop: false
     diego: false
     default_app_memory: 1024
     maximum_app_disk_in_mb: 2048
-    client_max_body_size: 256M
+    client_max_body_size: 1536M
 
     srv_api_uri: (( "https://api." domain ))
 
@@ -75,6 +72,7 @@ properties:
       app_package_directory_key: (( domain "-cc-packages" ))
       fog_connection: ~
       cdn: ~
+      max_package_size: 1073741824
 
     droplets:
       droplet_directory_key: (( domain "-cc-droplets" ))
@@ -100,7 +98,25 @@ properties:
     quota_definitions: (( merge || meta.default_quota_definitions ))
     default_quota_definition: default
 
+    user_buildpacks: (( merge || [] ))
+    system_buildpacks: (( merge || default_buildpacks ))
+    default_buildpacks:
+      - name: java_buildpack
+        package: buildpack_java
+      - name: ruby_buildpack
+        package: buildpack_ruby
+      - name: nodejs_buildpack
+        package: buildpack_nodejs
+      - name: go_buildpack
+        package: buildpack_go
+
+    install_buildpacks: (( system_buildpacks user_buildpacks ))
+
   login:
+    analytics:
+      code: ~
+      domain: ~
+    url: ~
     catalina_opts: (( merge ))
     uaa_certificate: ~
     protocol: https
@@ -119,6 +135,7 @@ properties:
     no_ssl: false
 
     scim:
+      userids_enabled: (( merge || false ))
       users: (( merge ))
 
     jwt:
@@ -136,9 +153,10 @@ properties:
       password: (( merge ))
     
     login:
-      addnew: false
+      client_secret: ~
       
     clients:
+      <<: (( merge || nil ))
       login:
         override: true
         scope: openid,oauth.approvals
@@ -186,4 +204,3 @@ properties:
         authorized-grant-types: client_credentials
         access-token-validity: 1209600
         refresh-token-validity: 1209600
-      cc_service_broker_client: ~
