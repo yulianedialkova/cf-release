@@ -12,6 +12,8 @@ meta:
     name: bosh-openstack-kvm-ubuntu
     version: latest
 
+  floating_static_ips: (( merge ))
+
 networks: (( merge ))
 
 properties:
@@ -48,7 +50,7 @@ properties:
     port: 5524
     roles:
     - name: ccadmin
-      password: nil
+      password: (( merge ))
       tag: admin
 
   ccdb: (( ccdb_ng ))
@@ -62,7 +64,7 @@ properties:
     port: 5524
     roles:
     - name: uaaadmin
-      password: nil
+      password: (( merge ))
       tag: admin
 
   databases:
