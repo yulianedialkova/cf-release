@@ -78,7 +78,6 @@ properties:
       - tag: admin
         name: uaaadmin
         password: (( merge ))
-      - (( merge || nil ))
 
     databases:
       - tag: cc
@@ -87,7 +86,6 @@ properties:
       - tag: uaa
         name: uaadb
         citext: true
-      - (( merge || nil ))
 
 compilation:
   cloud_properties:
