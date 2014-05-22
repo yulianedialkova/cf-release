@@ -123,10 +123,10 @@ buildpack_cache/play-jpa-plugin-0.6.6.jar:
   sha: 3df7c473533d1ffe4e5f2d0360f8d412280f9627
   size: 4320
 rootfs/lucid64.tar.gz:
-  object_id: 585cd03a-364c-4a90-be68-f31cc4861ab6
+  object_id: fee97b71-17d7-4fab-a5b0-69d4112521e6
   sha: !binary |-
-    ZjcyODM4YWQ3OWRiMzI0NDcxYzU4NGFiNzZkZjJkOWQ2NDYwN2EwMA==
-  size: 200590036
+    ZWZhYmYyODI3ZDMwZDg1MDY4Mzc0ZjNlODk2MmMzNDNkM2MyNDBiNg==
+  size: 202918161
 buildpack_cache/openjdk-1.6.0_27.tar.gz:
   object_id: 51513056-c453-44af-a77c-1fdad381d6ad
   sha: !binary |-
@@ -167,16 +167,6 @@ buildpack_cache/auto-reconfiguration-0.6.8.jar:
   sha: !binary |-
     MjY4MjYwMDM5YzZmMjU4N2M1Y2M0M2MyYjU3M2VlODhiNGRiZWMwYw==
   size: 709165
-ruby/ruby-1.9.3-p448.tar.gz:
-  object_id: 37208aad-5274-4364-8590-c8516bc57a1b
-  sha: !binary |-
-    YzdmNzM2ZTNiYzFjYTFlNjYxOWE5MTIxODM3ZGQwODQwYWFkNzdjZQ==
-  size: 12559260
-golang/go1.1.2.linux-amd64-yacc-shaved.tar.gz:
-  object_id: 12274b09-fe06-4990-a2fe-1b6e04616009
-  sha: !binary |-
-    MDJhYTlmNDdiOTVjZTAxMmI1NzAyZGFmNDFkM2ZmNGI3ODFhYzMwZQ==
-  size: 41768327
 haproxy/haproxy-1.5-dev19.tar.gz:
   object_id: 4832cdff-951f-4e76-b7b9-d7b126ddef8d
   sha: !binary |-
@@ -187,21 +177,11 @@ haproxy/pcre-8.33.tar.gz:
   sha: !binary |-
     YmNlYWZiNTM1NTMyMTlkYWQyNTkzYmI4YWYwNmRhNGQwN2ZkMzgyOA==
   size: 1889401
-ruby/ruby-1.9.3-p484.tar.gz:
-  object_id: 757e9f79-4d3a-4b0a-80ba-2b9ab1715498
-  sha: !binary |-
-    NmFlODBmNDI0OTY4YjVjZTY2MWVlOWIyYmVlMWMyMWFkYzllZTY3Yw==
-  size: 12576996
 maven/apache-maven-3.1.1-bin.tar.gz:
   object_id: 6f015bd2-aefb-4996-a9d7-1ac8c3411ad6
   sha: !binary |-
     NjMwZWVhMjEwN2IwNzQyYWNiMzE1YjIxNDAwOWJhMDg2MDJkZGE1Zg==
   size: 5494427
-golang/go1.2.linux-amd64.tar.gz:
-  object_id: e66c98d4-40cc-4710-b83a-425dce5c0451
-  sha: !binary |-
-    NjY0ZTUwMjVlYWU5MTQxMmE5NmExMGY0ZWQxYThhZjZmMGYzMmI3ZA==
-  size: 55966325
 nginx/headers-more-v0.25.tgz:
   object_id: a621718d-df24-4205-ba31-6ed8a212732e
   sha: !binary |-
@@ -227,11 +207,6 @@ nginx/newrelic_nginx_agent.tar.gz:
   sha: !binary |-
     OThhMWIxMDQ3NTM3MTcwNTkzMmZlYTQ3NjlmOGFjMWIwNDUxMTA2Zg==
   size: 5222
-ruby/yaml-0.1.5.tar.gz:
-  object_id: b1ba61d9-abb3-4427-b9d3-0b1fd70f71a4
-  sha: !binary |-
-    OGI3OGNiOWY3NTljN2Q4MGRiOGE3MzI4YzBlYmVjZmUzNGZkZTczNw==
-  size: 504897
 golang/go1.2.1.linux-amd64.tar.gz:
   object_id: a5a3eaf9-54ac-47b6-bcf7-5ad59eafe787
   sha: !binary |-
@@ -282,3 +257,8 @@ ruby/ruby-1.9.3-p545.tar.gz:
   sha: !binary |-
     MDM0NTUzNjQ3NDA5MTRlOGQyZGZkNjQyMWY2ODFiM2ZiNjhhNDMxMw==
   size: 12582277
+ruby/yaml-0.1.6.tar.gz:
+  object_id: 3b33cc37-7522-44cd-a068-ab61c5df746e
+  sha: !binary |-
+    ZjNkNDA0ZTExYmVjM2M0ZWZjZGRmZDE0YzQyZDQ2ZjFhYWJlMGI1ZA==
+  size: 503012
