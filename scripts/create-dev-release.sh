@@ -4,6 +4,10 @@ set -e -x
 
 CF_RELEASE_OUT="../create-release.out"
 
+if [ -d $HOME/cf-release-blobs ]; then
+  mv $HOME/cf-release-blobs .blobs
+fi
+
 bosh -n create release --with-tarball | tee $CF_RELEASE_OUT
 
 EXIT_STATUS=${PIPESTATUS[0]}

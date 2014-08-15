@@ -1,12 +1,10 @@
 FROM ubuntu:trusty
 
-RUN apt-get update
+RUN apt-get update && apt-get -y install libxml2-dev libxslt-dev libreadline-dev python-software-properties git
 
-RUN apt-get -y install libxml2-dev libxslt-dev libreadline-dev python-software-properties git
+RUN apt-get update && apt-get -y install libmysqlclient-dev libpq-dev libsqlite3-dev
 
-RUN apt-get -y install libmysqlclient-dev libpq-dev libsqlite3-dev
-
-RUN apt-get -y install build-essential zlib1g-dev libssl-dev libyaml-dev curl wget
+RUN apt-get update && apt-get -y install build-essential zlib1g-dev libssl-dev libyaml-dev curl wget
 
 RUN git clone https://github.com/postmodern/chruby /tmp/chruby
 RUN cd /tmp/chruby && git reset --hard 310bd34d1fcbb3365814c85018114123cef5a41f
@@ -23,3 +21,8 @@ RUN ruby-install ruby 1.9.3-p547
 RUN echo 'chruby 1.9.3-p547' >> $HOME/.bash_profile
 RUN bash -l -c "gem install bundler --no-rdoc --no-ri"
 RUN bash -l -c "gem install bosh_cli --no-rdoc --no-ri"
+
+RUN git clone https://github.com/cloudfoundry/cf-release.git --depth 1 -b develop /tmp/cf-release
+RUN bash -l -c "cd /tmp/cf-release && bosh sync blobs"
+RUN mv /tmp/cf-release/.blobs $HOME/cf-release-blobs
+RUN rm -rf /tmp/cf-release
