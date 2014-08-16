@@ -26,3 +26,7 @@ RUN git clone https://github.com/cloudfoundry/cf-release.git --depth 1 -b develo
 RUN bash -l -c "cd /tmp/cf-release && bosh sync blobs"
 RUN mv /tmp/cf-release/.blobs $HOME/cf-release-blobs
 RUN rm -rf /tmp/cf-release
+
+ADD https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0/spiff_linux_amd64.zip /tmp/
+RUN unzip /tmp/spiff_linux_amd64.zip -d /usr/local/bin
+RUN rm /tmp/spiff_linux_amd64.zip
