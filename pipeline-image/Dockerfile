@@ -4,7 +4,7 @@ RUN apt-get update && apt-get -y install libxml2-dev libxslt-dev libreadline-dev
 
 RUN apt-get update && apt-get -y install libmysqlclient-dev libpq-dev libsqlite3-dev
 
-RUN apt-get update && apt-get -y install build-essential zlib1g-dev libssl-dev libyaml-dev curl wget
+RUN apt-get update && apt-get -y install build-essential zlib1g-dev libssl-dev libyaml-dev curl wget unzip
 
 RUN git clone https://github.com/postmodern/chruby /tmp/chruby
 RUN cd /tmp/chruby && git reset --hard 310bd34d1fcbb3365814c85018114123cef5a41f
@@ -23,8 +23,7 @@ RUN bash -l -c "gem install bundler --no-rdoc --no-ri"
 RUN bash -l -c "gem install bosh_cli --no-rdoc --no-ri"
 
 RUN git clone https://github.com/cloudfoundry/cf-release.git --depth 1 -b develop /tmp/cf-release
-RUN bash -l -c "cd /tmp/cf-release && bosh sync blobs"
-RUN mv /tmp/cf-release/.blobs $HOME/cf-release-blobs
+RUN bash -l -c "cd /tmp/cf-release && bosh sync blobs && mv /tmp/cf-release/.blobs $HOME/cf-release-blobs"
 RUN rm -rf /tmp/cf-release
 
 ADD https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0/spiff_linux_amd64.zip /tmp/
