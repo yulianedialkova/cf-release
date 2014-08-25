@@ -4,7 +4,7 @@ RUN apt-get update && apt-get -y install libxml2-dev libxslt-dev libreadline-dev
 
 RUN apt-get update && apt-get -y install libmysqlclient-dev libpq-dev libsqlite3-dev
 
-RUN apt-get update && apt-get -y install build-essential zlib1g-dev libssl-dev libyaml-dev curl wget unzip
+RUN apt-get update && apt-get -y install build-essential zlib1g-dev libssl-dev libyaml-dev curl wget unzip mercurial bison
 
 RUN git clone https://github.com/postmodern/chruby /tmp/chruby
 RUN cd /tmp/chruby && git reset --hard 310bd34d1fcbb3365814c85018114123cef5a41f
@@ -26,6 +26,12 @@ RUN git clone https://github.com/cloudfoundry/cf-release.git --depth 1 -b develo
 RUN bash -l -c "cd /tmp/cf-release && bosh sync blobs && mv /tmp/cf-release/.blobs $HOME/cf-release-blobs"
 RUN rm -rf /tmp/cf-release
 
-ADD https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0/spiff_linux_amd64.zip /tmp/
-RUN unzip /tmp/spiff_linux_amd64.zip -d /usr/local/bin
-RUN rm /tmp/spiff_linux_amd64.zip
+RUN curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer -o /tmp/gvm-install.sh
+RUN chmod 744 /tmp/gvm-install.sh
+RUN bash -l -c "GVM_NO_UPDATE_PROFILE=false /tmp/gvm-install.sh"
+RUN bash -l -c "source $HOME/.gvm/scripts/gvm && gvm install go1.3.1"
+
+RUN git clone https://github.com/cloudfoundry-incubator/spiff.git /tmp/go/src/github.com/cloudfoundry-incubator/spiff
+RUN bash -l -c "source $HOME/.gvm/scripts/gvm && gvm use go1.3.1 && GOPATH=/tmp/go /tmp/go/src/github.com/cloudfoundry-incubator/spiff/scripts/build"
+RUN cp /tmp/go/src/github.com/cloudfoundry-incubator/spiff/spiff /usr/local/bin
+RUN rm -rf /tmp/go
