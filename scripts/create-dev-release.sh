@@ -9,11 +9,11 @@ if [ -d $HOME/cf-release-blobs ]; then
 fi
 
 if [ -d $HOME/cf-release-dev-builds ]; then
-  mv $HOME/cf-release-dev-builds .dev_builds
+  mv $HOME/cf-release-dev-builds/ .dev_builds
 fi
 
 if [ -d $HOME/cf-release-final-builds ]; then
-  mv $HOME/cf-release-final-builds .final_builds
+  mv $HOME/cf-release-final-builds/ .final_builds
 fi
 
 bosh -n create release --with-tarball | tee $CF_RELEASE_OUT
