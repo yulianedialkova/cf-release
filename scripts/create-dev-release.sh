@@ -13,7 +13,7 @@ if [ -d $HOME/cf-release-dev-builds ]; then
 fi
 
 if [ -d $HOME/cf-release-final-builds ]; then
-  find $HOME/cf-release-final-builds -name *.tgz | awk "{ x=gensub(\"$HOME/cf-release-final-builds/\", \"\", \$1); print \"mv \" \$1 \" .final_builds/\" x }" | bash
+  find $HOME/cf-release-final-builds -name *.tgz | sed "s|\($HOME/cf-release-final-builds/\)\(.*\)|mv \1\2 .final_builds/\2|" | bash
 fi
 
 bosh -n create release --with-tarball | tee $CF_RELEASE_OUT
