@@ -36,7 +36,7 @@ RUN bash -l -c "git clone https://github.com/cloudfoundry/cf-release.git --depth
   cd /tmp/cf-release && \
   git submodule update --init --recursive && \
   bosh sync blobs && \
-  bosh --non-interactive --verbose create release --dry-run && \
+  bosh --non-interactive --verbose create release && \
   mv /tmp/cf-release/.blobs $HOME/cf-release-blobs && \
   mv /tmp/cf-release/.dev_builds $HOME/cf-release-dev-builds && \
   mv /tmp/cf-release/.final_builds $HOME/cf-release-final-builds && \
