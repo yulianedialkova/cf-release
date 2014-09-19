@@ -2,14 +2,18 @@ FROM ubuntu:trusty
 
 # docker defaults to using '/' as $HOME, we have to setup bash this way to get ruby and go in the path
 # when doing 'bash -l -c'
-RUN touch $HOME/.bashrc
+RUN echo '' > $HOME/.bashrc
 RUN echo "[ -f ~/.bashrc ] && source ~/.bashrc" >> $HOME/.bash_profile
+
+RUN echo "deb http://apt.gemnasium.com stable main" > /etc/apt/sources.list.d/gemnasium.list
+RUN apt-key adv --recv-keys --keyserver keyserver.ubuntu.com E5CEAB0AC5F1CA2A
 
 RUN apt-get update
 RUN apt-get -y install \
   bison \
   build-essential \
   curl \
+  gemnasium-toolbelt \
   git \
   libcurl4-openssl-dev \
   libmysqlclient-dev \
