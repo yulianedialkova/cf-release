@@ -157,6 +157,72 @@ jobs:
   - name: postgres
     release: cf
 - instances: 1
+  name: hm9000_z1
+  networks:
+  - name: cf1
+  properties:
+    networks:
+      apps: cf1
+  resource_pool: medium_z1
+  templates:
+  - name: hm9000
+    release: cf
+- instances: 1
+  name: hm9000_z2
+  networks:
+  - name: cf2
+  properties:
+    networks:
+      apps: cf2
+  resource_pool: medium_z2
+  templates:
+  - name: hm9000
+    release: cf
+- instances: 1
+  name: runner_z1
+  networks:
+  - name: cf1
+    static_ips: null
+  properties:
+    dea_next:
+      zone: null
+    metron_agent:
+      zone: z1
+    networks:
+      apps: cf1
+  resource_pool: runner_z1
+  templates:
+  - name: dea_next
+    release: cf
+  - name: dea_logging_agent
+    release: cf
+  - name: metron_agent
+    release: cf
+  update:
+    max_in_flight: 1
+- instances: 1
+  name: runner_z2
+  networks:
+  - name: cf2
+    static_ips: null
+  properties:
+    dea_next:
+      zone: null
+    metron_agent:
+      zone: z2
+    networks:
+      apps: cf2
+  resource_pool: runner_z2
+  templates:
+  - name: dea_next
+    release: cf
+  - name: dea_logging_agent
+    release: cf
+  - name: metron_agent
+    release: cf
+  update:
+    max_in_flight: 1
+- instances: 1
   name: uaa_z1
   networks:
   - name: cf1
@@ -303,72 +369,6 @@ jobs:
     release: cf
   - name: metron_agent
     release: cf
-- instances: 1
-  name: hm9000_z1
-  networks:
-  - name: cf1
-  properties:
-    networks:
-      apps: cf1
-  resource_pool: medium_z1
-  templates:
-  - name: hm9000
-    release: cf
-- instances: 1
-  name: hm9000_z2
-  networks:
-  - name: cf2
-  properties:
-    networks:
-      apps: cf2
-  resource_pool: medium_z2
-  templates:
-  - name: hm9000
-    release: cf
-- instances: 1
-  name: runner_z1
-  networks:
-  - name: cf1
-    static_ips: null
-  properties:
-    dea_next:
-      zone: null
-    metron_agent:
-      zone: z1
-    networks:
-      apps: cf1
-  resource_pool: runner_z1
-  templates:
-  - name: dea_next
-    release: cf
-  - name: dea_logging_agent
-    release: cf
-  - name: metron_agent
-    release: cf
-  update:
-    max_in_flight: 1
-- instances: 1
-  name: runner_z2
-  networks:
-  - name: cf2
-    static_ips: null
-  properties:
-    dea_next:
-      zone: null
-    metron_agent:
-      zone: z2
-    networks:
-      apps: cf2
-  resource_pool: runner_z2
-  templates:
-  - name: dea_next
-    release: cf
-  - name: dea_logging_agent
-    release: cf
-  - name: metron_agent
-    release: cf
-  update:
-    max_in_flight: 1
 - instances: 2
   name: loggregator_z1
   networks:

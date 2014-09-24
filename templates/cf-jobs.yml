@@ -217,6 +217,56 @@ jobs:
     - name: cf1
       static_ips: ~
 
+  - name: hm9000_z1
+    templates: (( merge || meta.hm9000_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+    properties:
+      networks: (( meta.networks.z1 ))
+
+  - name: hm9000_z2
+    templates: (( merge || meta.hm9000_templates ))
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+    properties:
+      networks: (( meta.networks.z2 ))
+
+  - name: runner_z1
+    templates: (( merge || meta.dea_templates ))
+    instances: 1
+    update:
+      max_in_flight: 1
+    resource_pool: runner_z1
+    networks:
+      - name: cf1
+        static_ips: ~
+    properties:
+      dea_next:
+        zone: (( merge || nil ))
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+
+  - name: runner_z2
+    templates: (( merge || meta.dea_templates ))
+    instances: 1
+    update:
+      max_in_flight: 1
+    resource_pool: runner_z2
+    networks:
+      - name: cf2
+        static_ips: ~
+    properties:
+      dea_next:
+        zone: (( merge || nil ))
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+
   - name: uaa_z1
     templates: (( merge || meta.uaa_templates ))
     instances: 1
@@ -316,56 +366,6 @@ jobs:
       metron_agent:
         zone: z2
       nfs_server: (( meta.nfs_server ))
-
-  - name: hm9000_z1
-    templates: (( merge || meta.hm9000_templates ))
-    instances: 1
-    resource_pool: medium_z1
-    networks:
-      - name: cf1
-    properties:
-      networks: (( meta.networks.z1 ))
-
-  - name: hm9000_z2
-    templates: (( merge || meta.hm9000_templates ))
-    instances: 1
-    resource_pool: medium_z2
-    networks:
-      - name: cf2
-    properties:
-      networks: (( meta.networks.z2 ))
-
-  - name: runner_z1
-    templates: (( merge || meta.dea_templates ))
-    instances: 1
-    update:
-      max_in_flight: 1
-    resource_pool: runner_z1
-    networks:
-      - name: cf1
-        static_ips: ~
-    properties:
-      dea_next:
-        zone: (( merge || nil ))
-      networks: (( meta.networks.z1 ))
-      metron_agent:
-        zone: z1
-
-  - name: runner_z2
-    templates: (( merge || meta.dea_templates ))
-    instances: 1
-    update:
-      max_in_flight: 1
-    resource_pool: runner_z2
-    networks:
-      - name: cf2
-        static_ips: ~
-    properties:
-      dea_next:
-        zone: (( merge || nil ))
-      networks: (( meta.networks.z2 ))
-      metron_agent:
-        zone: z2
 
   - name: loggregator_z1
     templates: (( merge || meta.loggregator_templates ))
