@@ -3,7 +3,6 @@ name: cloud_controller_clock
 templates:
   cloud_controller_clock.yml.erb: config/cloud_controller_ng.yml
   cloud_controller_clock_ctl.erb: bin/cloud_controller_clock_ctl
-  syslog_forwarder.conf.erb: config/syslog_forwarder.conf
   newrelic.yml.erb: config/newrelic.yml
   stacks.yml.erb: config/stacks.yml
 
@@ -16,23 +15,11 @@ packages:
   - mysqlclient
   - sqlite
   - ruby
-  - syslog_aggregator
 
 properties:
   ssl.skip_cert_verify:
     description: "specifies that the job is allowed to skip ssl cert verification"
     default: false
-
-  syslog_aggregator.address:
-    description: "IP address for syslog aggregator"
-  syslog_aggregator.port:
-    description: "TCP port of syslog aggregator"
-  syslog_aggregator.all:
-    description: "Define whether forwarders should send all their syslog data to our aggregator."
-    default: false
-  syslog_aggregator.transport:
-    description: "Transport to be used when forwarding logs (tcp|udp|relp)."
-    default: "tcp"
 
   name:
     default: "vcap"
