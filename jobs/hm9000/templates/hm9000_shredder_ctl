@@ -23,6 +23,7 @@ case $1 in
         shred \
         --config=/var/vcap/jobs/hm9000/config/hm9000.json \
         --poll \
+        --debugAddr="0.0.0.0:17008" \
          1>>$LOG_DIR/hm9000_shredder.stdout.log \
          2>>$LOG_DIR/hm9000_shredder.stderr.log
 

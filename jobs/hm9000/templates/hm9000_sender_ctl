@@ -23,6 +23,7 @@ case $1 in
         send \
         --config=/var/vcap/jobs/hm9000/config/hm9000.json \
         --poll \
+        --debugAddr="0.0.0.0:17007" \
          1>>$LOG_DIR/hm9000_sender.stdout.log \
          2>>$LOG_DIR/hm9000_sender.stderr.log
 
