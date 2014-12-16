@@ -448,6 +448,10 @@ properties:
     description: "Used to grant scope for SSO clients for service brokers"
     default: "openid,cloud_controller_service_permissions.read"
 
+  cc.autoapprove_dashboard_clients:
+    description: "Flag to create all dashboard clients with 'autoapprove: true'"
+    default: false
+
   cc.install_buildpacks:
     description: "Set of buildpacks to install during deploy"
   cc.app_bits_upload_grace_period_in_seconds:

@@ -65,6 +65,8 @@ properties:
     audit_events:
       cutoff_age_in_days: 31
 
+    autoapprove_dashboard_clients: (( merge || nil ))
+
     billing_event_writing_enabled: true
 
     diego:

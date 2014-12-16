@@ -2285,6 +2285,7 @@ properties:
       cutoff_age_in_days: 31
     audit_events:
       cutoff_age_in_days: 31
+    autoapprove_dashboard_clients: null
     billing_event_writing_enabled: true
     broker_client_timeout_seconds: 70
     buildpacks:
