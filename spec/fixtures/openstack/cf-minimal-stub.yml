@@ -1,0 +1,268 @@
+---
+# environment
+cf_domain: REPLACE_WITH_SYSTEM_DOMAIN
+
+director_uuid: REPLACE_WITH_BOSH_DIRECTOR_ID
+
+# openstack
+os_net_id: REPLACE_WITH_OPENSTACK_NETWORK_ID
+os_auth_url: REPLACE_WITH_OPENSTACK_AUTH_URL
+os_tenant: REPLACE_WITH_OPENSTACK_TENANT
+os_user: REPLACE_WITH_OPENSTACK_USER
+os_api_key: REPLACE_WITH_OPENSTACK_API_KEY
+os_sec_groups_internal:  REPLACE_WITH_OPENSTACK_SECURITY_GROUPS_ARRAY
+os_sec_groups_vip: []
+
+# openstack network
+os_net_range: 10.0.0.0/24
+os_net_gateway: 10.0.0.1
+#os_net_reserved:
+#  - 10.230.5.2 - 10.230.5.135
+#  - 10.230.5.175 - 10.230.5.254
+os_net_static:
+  - 10.0.0.100 - 10.0.0.199
+protocol: https
+
+compilation:
+  workers: 4
+
+cc_staging_upload_user: staging_user
+cc_db_encryption_key: REPLACE_WITH_PASSWORD_FOR_DATABASE_ENCRYPTION
+cc_bulk_api_password: REPLACE_WITH_PASSWORD_FOR_BULK_API
+cc_staging_upload_password: REPLACE_WITH_PASSWORD_FOR_STAGING_UPLOAD
+
+uaa_admin_client_secret: REPLACE_WITH_PASSWORD_UAA_ADMIN
+uaa_batch_username: batchuser
+uaa_batch_password: REPLACE_WITH_PASSWORD_FOR_UAA_BATCH
+uaa_cc_client_secret: REPLACE_WITH_PASSWORD_FOR_UAA_CC_CLIENT
+uaa_clients_doppler_secret: REPLACE_WITH_PASSWORD_FOR_UAA_DOPPLER_CLIENT
+uaa_clients_login_secret: REPLACE_WITH_PASSWORD_FOR_UAA_LOGIN_CLIENT
+uaa_clients_servicesmgmt_secret: REPLACE_WITH_PASSWORD_FOR_UAA_SERVICES_MANAGEMENT_CLIENT
+uaa_clients_support_services_secret: REPLACE_WITH_PASSWORD_FOR_UAA_SUPPORT_SERVICES_CLIENT
+uaa_clients_notifications_secret: REPLACE_WITH_PASSWORD_FOR_UAA_NOTIFICATIONS_CLIENT
+
+ccadmin_password: REPLACE_WITH_PASSWORD_FOR_CLOUD_CONTROLLER_DATABASE
+uaaadmin_password: REPLACE_WITH_PASSWORD_FOR_UAA_DATABASE
+
+loggregator_secret: REPLACE_WITH_PASSWORD_FOR_LOGGREGATOR
+
+scim_admin_password: REPLACE_WITH_PASSWORD_FOR_UAA_ADMIN_USER
+scim_services_password: REPLACE_WITH_PASSWORD_FOR_UAA_SERVICES_USER
+
+nats_user: nats
+nats_password: REPLACE_WITH_PASSWORD_FOR_NATS
+
+router_user: admin
+router_password: REPLACE_WITH_PASSWORD_FOR_ROUTER
+
+ha_proxy_floating_static_ips:
+- 10.0.0.200
+
+meta:
+  environment: cf-openstack-minimal
+
+  stemcell:
+    name: bosh-openstack-kvm-ubuntu-trusty-go_agent
+
+  openstack:
+    net_id: (( os_net_id ))
+    auth_url: (( os_auth_url ))
+    tenant: (( os_tenant ))
+    username: (( os_user ))
+    api_key: (( os_api_key ))
+    security_groups: (( os_sec_groups_internal ))
+
+  floating_static_ips: (( ha_proxy_floating_static_ips ))
+
+  #TODO: generate keys
+  haproxy_key: REPLACE_WITH_HAPROXY_RSA_PRIVATE_KEY
+
+  haproxy_crt: REPLACE_WITH_HAPROXY_CERTIFICATE_FOR_SYSTEM_DOMAIN
+
+  jwt_signing_key: REPLACE_WITH_UAA_JWT_RSA_PRIVATE_KEY
+
+  jwt_verification_key: REPLACE_WITH_UAA_JWT_RSA_PUBLIC_KEY
+
+
+# particular to your Openstack network setup
+networks:
+  - name: floating
+    type: vip
+    cloud_properties:
+      net_id: (( meta.openstack.net_id )) # TODO: should be external network? doesn't matter?
+      security_groups: (( os_sec_groups_vip ))
+  - name: cf1
+    type: manual
+    subnets:
+    - range: (( os_net_range ))
+      gateway: (( os_net_gateway ))
+      # 'reserved' are addresses BOSH won't allocate no matter what
+#      reserved: (( os_net_reserved ))
+      dns:
+      - 8.8.8.8
+      # static pool. Anything outside of 'static' and 'reserved' is 'dynamic'
+      # BOSH will use 'dynamic' for jobs without a static_ip as well as compile VMs
+      # you need two times the number of 'dynamic' ip as you expect to use
+      static: (( os_net_static ))
+      cloud_properties:
+        net_id: (( os_net_id ))
+        security_groups: (( os_sec_groups_internal ))
+  - name: cf2
+    type: manual
+    subnets: (( networks.cf1.subnets ))
+
+properties:
+#  smoke_tests:
+#    api: (( properties.cc.srv_api_uri ))
+#    user: admin
+#    password: (( scim_admin_password ))
+#    apps_domain: (( domain ))
+#    org: SMOKE_TEST_ORG
+#    space: SMOKE_TEST_SPACE
+#    skip_ssl_validation: true
+
+  domain: (( cf_domain ))
+
+  cc:
+    staging_upload_user: (( cc_staging_upload_user ))
+    staging_upload_password: (( cc_staging_upload_password ))
+    db_encryption_key: (( cc_db_encryption_key ))
+    bulk_api_password: (( cc_bulk_api_password ))
+    srv_api_uri: (( protocol "://api." cf_domain ))
+    uaa_skip_ssl_validation: true
+
+    default_quota_definition: large
+    quota_definitions:
+      large:
+        memory_limit: 100000
+        total_services: -1
+        total_routes: 1000
+        non_basic_services_allowed: true
+  uaa:
+    admin:
+      client_secret: (( uaa_admin_client_secret ))
+    batch:
+      password: (( uaa_batch_password ))
+      username: (( uaa_batch_username ))
+    cc:
+      client_secret: (( uaa_cc_client_secret ))
+    clients:
+      doppler:
+        secret: (( uaa_clients_doppler_secret ))
+      login:
+        redirect-uri: (( "http://login." domain ))
+        secret: (( uaa_clients_login_secret ))
+      servicesmgmt:
+        redirect-uri: (( protocol "://servicesmgmt." domain "/auth/cloudfoundry/callback" ))
+        secret: (( uaa_clients_servicesmgmt_secret ))
+      notifications:
+        secret: (( uaa_clients_notifications_secret ))
+      support-services:
+        redirect-uri: (( protocol "://support-signon." domain ))
+        secret: (( uaa_clients_support_services_secret ))
+    url: (( protocol "://uaa." domain ))
+    jwt:
+      signing_key: (( meta.jwt_signing_key ))
+      verification_key: (( meta.jwt_verification_key ))
+    scim:
+      users:
+        - (( "admin|" scim_admin_password "|scim.write,scim.read,openid,cloud_controller.admin,doppler.firehose" ))
+        - (( "services|" scim_services_password "|scim.write,scim.read,openid,cloud_controller.admin" ))
+
+  ccdb:
+    roles:
+    - name: ccadmin
+      password: (( ccadmin_password ))
+  databases:
+    roles:
+    - name: ccadmin
+      password: (( ccadmin_password ))
+    - name: uaaadmin
+      password: (( uaaadmin_password ))
+  loggregator_endpoint:
+    shared_secret: (( loggregator_secret ))
+    port: 3456
+
+  nats:
+    user: (( nats_user ))
+    password: (( nats_password ))
+  router:
+    status:
+      password: (( router_password ))
+      user: (( router_user ))
+  dea_next:
+    memory_mb: 8192
+    disk_mb: 16384
+  ssl:
+    skip_cert_verify: true
+  uaadb:
+    roles:
+    - name: uaaadmin
+      password: (( uaaadmin_password ))
+  login:
+    analytics:
+      code:
+      domain:
+    protocol: http
+    uaa_certificate:
+    url:
+  syslog_aggregator:
+
+
+jobs:
+- name: ha_proxy_z1
+  instances: 1
+  networks:
+    - name: cf1
+      default:
+      - dns
+      - gateway
+  properties:
+    ha_proxy:
+      ssl_pem: (( meta.haproxy_key meta.haproxy_crt ))
+
+#- name: router_z1
+#  instances: 1
+
+#- name: smoke_tests
+#  instances: 1
+
+#- name: loggregator_z1
+#  instances: 1
+
+#- name: loggregator_trafficcontroller_z1
+#  instances: 1
+
+#- name: etcd_z1
+#  instances: 1
+
+#- name: nats_z1
+#  instances: 1
+
+#- name: nfs_z1
+#  instances: 1
+
+#- name: postgres_z1
+#  instances: 1
+
+- name: api_z1
+#  instances: 1
+  templates:
+    - name: cloud_controller_ng
+#    - name: cloud_controller_clock
+    - name: cloud_controller_worker
+    - name: metron_agent
+    - name: nfs_mounter
+
+#- name: runner_z1
+#  instances: 1
+
+- name: logs_z1
+  instances: 0
+
+- name: api_worker_z1
+  instances: 0
+
+#- name: clock_global
+#  instances: 0
+
