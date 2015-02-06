@@ -18,6 +18,7 @@ packages:
 - dea_next
 - warden
 - rootfs_lucid64
+- rootfs_trusty64
 - ruby
 - buildpack_cache
 
@@ -59,7 +60,7 @@ properties:
     default: 1
   dea_next.stacks:
     default:
-    - "lucid64"
+    - "trusty64"
     description:
   dea_next.streaming_timeout:
     description:

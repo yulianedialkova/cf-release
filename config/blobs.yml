@@ -299,3 +299,8 @@ rootfs/lucid64.tar.gz:
   sha: !binary |-
     NmRhNjY5MGU1MDE5NjBmNWFmMGI2MmQ0NWZmOGVhMDExZGEwNThjMQ==
   size: 202940087
+rootfs/trusty64.tar.gz:
+  object_id: 91de3dea-9718-4c0a-8e62-7546ba40d8a9
+  sha: !binary |-
+    ODI0YTQ1ZDYzNmI1Y2VmYzI5ODczNjk0NDgwYmFiMTUyNmNiZTEyMQ==
+  size: 253620861

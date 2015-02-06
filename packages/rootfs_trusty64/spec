@@ -1,0 +1,4 @@
+---
+name: rootfs_trusty64
+files:
+- rootfs/trusty64.tar.gz
