@@ -13,5 +13,5 @@ before_install:
 script:
   - bundle exec rspec spec
   - rm spiff
-  - bundle exec bosh -n sync blobs
+  - bundle exec bosh --parallel 10 -n sync blobs
   - ./scripts/unused_blobs
