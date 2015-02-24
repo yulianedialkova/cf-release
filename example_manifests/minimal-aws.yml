@@ -42,7 +42,7 @@ resource_pools:
     version: REPLACE_WITH_BOSH_STEMCELL_VERSION
   cloud_properties:
     availability_zone: REPLACE_WITH_AZ
-    instance_type: m1.small
+    instance_type: m1.large
 
 compilation:
   workers: 6
@@ -156,28 +156,26 @@ jobs:
   networks:
   - name: cf_private
 
-- name: loggregator_z1
+- name: logging
   instances: 1
   resource_pool: small_z1
   templates:
   - {name: doppler, release: cf}
-  networks:
-  - name: cf_private
-  properties:
-    doppler: {zone: z1}
-    doppler_endpoint:
-      shared_secret: PASSWORD
-
-- name: loggregator_trafficcontroller_z1
-  instances: 1
-  resource_pool: small_z1
-  templates:
   - {name: loggregator_trafficcontroller, release: cf}
   - {name: metron_agent, release: cf}
   networks:
   - name: cf_private
   properties:
-    traffic_controller: {zone: z1}
+    doppler:
+      zone: z1
+      incoming_port: 3456
+      outgoing_port: 8081
+    doppler_endpoint:
+      shared_secret: PASSWORD
+    traffic_controller:
+      incoming_port: 3457
+      outgoing_port: 8082
+      zone: z1
 
 - name: login_z1
   instances: 1
