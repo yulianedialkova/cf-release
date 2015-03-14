@@ -3,12 +3,8 @@ name: ca_truster
 
 description: "CA truster adds CA certificates to the trusted list. It is intented do be included in every VM."
 
-templates:
-  ca_truster.sh.erb: bin/ca_truster.sh
-  ca_truster_ctl.erb: bin/ca_truster_ctl
-
-packages:
-  - common
+templates: {}
+packages: []
 
 properties:
   ca_truster.certificates:

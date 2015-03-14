@@ -7,7 +7,7 @@ templates:
   dea.yml.erb: config/dea.yml
   dea_ctl.erb: bin/dea_ctl
   deterministic_drain.rb: bin/drain
-
+  cert_writer.sh.erb: bin/cert_writer.sh
   warden.yml.erb: config/warden.yml
   warden_ctl.erb: bin/warden_ctl
 
@@ -21,6 +21,7 @@ packages:
 - rootfs_cflinuxfs2
 - ruby-2.1.4
 - buildpack_cache
+- ca-truster
 
 properties:
   domain:

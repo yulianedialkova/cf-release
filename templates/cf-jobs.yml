@@ -68,8 +68,6 @@ meta:
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   router_templates:
   - name: gorouter

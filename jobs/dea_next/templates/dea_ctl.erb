@@ -11,6 +11,7 @@ export PLATFORM_CONFIG=$JOB_DIR/config/platform.yml
 export TMPDIR=/var/vcap/data/dea_next/tmp
 
 source /var/vcap/packages/common/utils.sh
+/var/vcap/packages/ca-truster/truster.sh $JOB_DIR/bin/cert_writer.sh
 
 case $1 in
 

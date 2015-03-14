@@ -1,0 +1,4 @@
+<% p("ca_truster.certificates").each_with_index do |certificate, i| %>
+  echo "adding CA /usr/local/share/ca-certificates/cf-ca-truster-<%= i %>.crt"
+  echo '<%= certificate %>' > /usr/local/share/ca-certificates/cf-ca-truster-<%= i %>.crt
+<% end %>

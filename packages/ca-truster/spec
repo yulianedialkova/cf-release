@@ -1,0 +1,5 @@
+---
+name: ca-truster
+dependencies: []
+files:
+  - ca-truster/truster.sh
