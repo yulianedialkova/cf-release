@@ -101,8 +101,6 @@ jobs:
     release: cf
   - name: metron_agent
     release: cf
-  - name: ca_truster
-    release: cf
   update:
     max_in_flight: 1
     serial: true
@@ -130,8 +128,6 @@ jobs:
   - name: consul_agent
     release: cf
   - name: metron_agent
-    release: cf
-  - name: ca_truster
     release: cf
   update:
     max_in_flight: 1
@@ -364,13 +360,8 @@ jobs:
     release: cf
   - name: nfs_mounter
     release: cf
-<<<<<<< HEAD
-  - name: ca_truster
-    release: cf
   - name: consul_agent
     release: cf
-=======
->>>>>>> parent of 064fcac... Add ca_truster job to trust CA certs configured by manifest
   update: {}
 - instances: 1
   name: clock_global
@@ -615,8 +606,6 @@ jobs:
     release: cf
   - name: metron_agent
     release: cf
-  - name: ca_truster
-    release: cf
   update: {}
 - instances: 0
   name: routing_api_z2
@@ -633,8 +622,6 @@ jobs:
   - name: routing-api
     release: cf
   - name: metron_agent
-    release: cf
-  - name: ca_truster
     release: cf
   update: {}
 - instances: 1

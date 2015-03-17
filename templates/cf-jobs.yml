@@ -77,8 +77,6 @@ meta:
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   ha_proxy_templates:
   - name: haproxy
@@ -134,8 +132,6 @@ meta:
   - name: consul_agent
     release: (( meta.release.name ))
   - name: metron_agent
-    release: (( meta.release.name ))
-  - name: ca_truster
     release: (( meta.release.name ))
 
 jobs:
