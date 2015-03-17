@@ -33,8 +33,6 @@ meta:
     release: (( meta.release.name ))
   - name: nfs_mounter
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
   - name: consul_agent
     release: (( meta.release.name ))
 
@@ -45,15 +43,11 @@ meta:
     release: (( meta.release.name ))
   - name: nfs_mounter
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   clock_templates:
   - name: cloud_controller_clock
     release: (( meta.release.name ))
   - name: metron_agent
-    release: (( meta.release.name ))
-  - name: ca_truster
     release: (( meta.release.name ))
 
   nats_templates:
@@ -63,8 +57,6 @@ meta:
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   dea_templates:
   - name: dea_next
@@ -73,15 +65,11 @@ meta:
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   router_templates:
   - name: gorouter
     release: (( meta.release.name ))
   - name: metron_agent
-    release: (( meta.release.name ))
-  - name: ca_truster
     release: (( meta.release.name ))
 
   routing_api_templates:
@@ -97,8 +85,6 @@ meta:
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   etcd_templates:
   - name: etcd
@@ -107,15 +93,11 @@ meta:
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   stats_templates:
   - name: collector
     release: (( meta.release.name ))
   - name: metron_agent
-    release: (( meta.release.name ))
-  - name: ca_truster
     release: (( meta.release.name ))
 
   nfs_templates:
@@ -123,15 +105,11 @@ meta:
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   postgres_templates:
   - name: postgres
     release: (( meta.release.name ))
   - name: metron_agent
-    release: (( meta.release.name ))
-  - name: ca_truster
     release: (( meta.release.name ))
 
   uaa_templates:
@@ -139,23 +117,17 @@ meta:
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   login_templates:
   - name: login
     release: (( meta.release.name ))
   - name: metron_agent
     release: (( meta.release.name ))
-  - name: ca_truster
-    release: (( meta.release.name ))
 
   hm9000_templates:
   - name: hm9000
     release: (( meta.release.name ))
   - name: metron_agent
-    release: (( meta.release.name ))
-  - name: ca_truster
     release: (( meta.release.name ))
 
   consul_templates:
@@ -608,8 +580,6 @@ jobs:
     templates:
     - name: acceptance-tests
       release: (( meta.release.name ))
-    - name: ca_truster
-      release: (( meta.release.name ))
     instances: 0
     resource_pool: small_errand
     lifecycle: errand
@@ -619,8 +589,6 @@ jobs:
   - name: smoke_tests
     templates:
     - name: smoke-tests
-      release: (( meta.release.name ))
-    - name: ca_truster
       release: (( meta.release.name ))
     instances: 0
     resource_pool: small_errand

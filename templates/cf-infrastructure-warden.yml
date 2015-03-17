@@ -355,8 +355,6 @@ jobs:
         release: cf
       - name: nfs_mounter
         release: cf
-      - name: ca_truster
-        release: cf
       - name: consul_agent
         release: cf
 
