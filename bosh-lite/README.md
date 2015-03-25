@@ -13,6 +13,8 @@ Recommend using 16GB+ for better reliability and performance.
 
 Refer to [installation instructions](https://github.com/cloudfoundry/bosh-lite/blob/master/README.md) for BOSH Lite 
 
+## Install Spiff
+ ensure that you have installed [Spiff](https://github.com/cloudfoundry-incubator/spiff)  before running
 
 # Deploying the latest final cf-release on bosh-lite
 
