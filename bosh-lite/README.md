@@ -9,6 +9,23 @@
 8GB of RAM. 
 Recommend using 16GB+ for better reliability and performance.
 
+### Os X requirements
+```
+#install brew
+
+brew install ruby
+gem install bundler --no-rdoc --no-ri
+gem install bosh_cli --no-rdoc --no-ri
+```
+
+### Linux requirements
+```
+sudo apt-get update
+sudo apt-get install git libmysqlclient-dev libpq-dev unzip ruby ruby1.9.1-dev vagrant virtualbox
+sudo gem install bundler --no-rdoc --no-ri
+sudo gem install bosh_cli --no-rdoc --no-ri
+```
+
 ## Prepare and target the BOSH Lite director
 
 Refer to [installation instructions](https://github.com/cloudfoundry/bosh-lite/blob/master/README.md) for BOSH Lite 
