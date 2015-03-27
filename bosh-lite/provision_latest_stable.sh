@@ -32,8 +32,8 @@ build_manifest() {
     pushd $TMPDIR/cf-release
     local version=$(echo $MOST_RECENT_CF_RELEASE  | egrep -o 'cf-[0-9]+' | egrep -o '[0-9]+')
     git clean -ffdx
-    git co .
-    git co v$version
+    git checkout .
+    git checkout v$version
     ./update
     mkdir -p $CF_DIR/bosh-lite/manifests
     BOSH_RELEASES_DIR=$TMPDIR bosh-lite/make_manifest 
