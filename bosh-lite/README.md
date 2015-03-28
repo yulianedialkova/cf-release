@@ -81,7 +81,7 @@ CF Runtime team uses a manifest generator to test CloudFoundry with basic defaul
 bosh -d ./bosh-lite/manifests/cf-manifest.yml deploy
 ```
 
-### Confirm your cf is running and is able to deploy apps
+# Confirm your cf is running and is able to deploy apps
 
 There are 4 checks that confirm your CF is running correctly
 
