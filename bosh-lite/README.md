@@ -9,7 +9,7 @@
 8GB of RAM. 
 Recommend using 16GB+ for better reliability and performance.
 
-### Os X requirements
+### OS X requirements
 ```
 #install brew
 
@@ -32,13 +32,13 @@ Refer to [installation instructions](https://github.com/cloudfoundry/bosh-lite/b
 
 ## Install Spiff
  ensure that you have installed [Spiff](https://github.com/cloudfoundry-incubator/spiff)  before running
-
+For example:
 ```
 wget https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0.3/spiff_linux_amd64.zip
 sudo unzip -oq ~/workspace/spiff_linux_amd64.zip -d /usr/local/bin/
 ```
 
-# Deploying the latest final cf-release on bosh-lite
+# Steps for deploying the latest final cf-release on bosh-lite
 
 ```
 git clone https://github.com/cloudfoundry/cf-release
