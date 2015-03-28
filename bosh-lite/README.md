@@ -33,6 +33,11 @@ Refer to [installation instructions](https://github.com/cloudfoundry/bosh-lite/b
 ## Install Spiff
  ensure that you have installed [Spiff](https://github.com/cloudfoundry-incubator/spiff)  before running
 
+```
+wget https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0.3/spiff_linux_amd64.zip
+sudo unzip -oq ~/workspace/spiff_linux_amd64.zip -d /usr/local/bin/
+```
+
 # Deploying the latest final cf-release on bosh-lite
 
 ```
