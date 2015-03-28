@@ -97,20 +97,20 @@ curl api.10.244.0.34.xip.io/v2/info
 ```
 
 ##### Simple app push
-Use cf cli(available at https://github.com/cloudfoundry/cli) to push one of simple apps available in `src/acceptance-tests/assets`. This 
+Use cf cli(available at https://github.com/cloudfoundry/cli) to push one of the simple apps available in `cf-release/src/acceptance-tests/assets`. This 
 
 ```
 cd src/acceptance-tests/assets/ruby_simple
 #login into a an account, space, org
-cf logout
 cf api api.10.244.0.34.xip.io --skip-ssl-validation
 cf auth admin admin
-cf co test1
+cf create-org test1
 cf target -o test1
 cf create-space test1
 cf target -o test1 -s test1
 cf push test_app
 #Observe deployment for any errors or warnings
+curl test-app.10.244.0.34.xip.io
 ```
 
 ##### Acceptance tests
