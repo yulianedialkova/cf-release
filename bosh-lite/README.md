@@ -38,6 +38,13 @@ wget https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0.3/sp
 sudo unzip -oq ~/workspace/spiff_linux_amd64.zip -d /usr/local/bin/
 ```
 
+## Fix some file permissions on the bosh-lite image
+```
+sudo chown ubuntu:ubuntu ~/.bosh_config
+sudo chown ubuntu:ubuntu ~/tmp
+```
+
+
 # Steps for deploying the latest final cf-release on bosh-lite
 
 ```
