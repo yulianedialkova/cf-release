@@ -21,7 +21,7 @@ gem install bosh_cli --no-rdoc --no-ri
 ### Linux requirements
 ```
 sudo apt-get update
-sudo apt-get install git libmysqlclient-dev libpq-dev unzip ruby ruby1.9.1-dev vagrant virtualbox
+sudo apt-get install git libmysqlclient-dev libpq-dev unzip ruby ruby1.9.1-dev
 sudo gem install bundler --no-rdoc --no-ri
 sudo gem install bosh_cli --no-rdoc --no-ri
 ```
