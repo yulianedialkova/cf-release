@@ -1,0 +1,16 @@
+# abort script on any command that exits with a non zero value
+set -e -x
+
+pushd ${BOSH_INSTALL_TARGET}
+  mkdir jdk
+  tar xzf ${BOSH_COMPILE_TARGET}/java/openjdk-1.7.0_79.tar.gz -C jdk
+popd
+
+pushd ${BOSH_INSTALL_TARGET}
+  mkdir jruby
+  tar xzf ${BOSH_COMPILE_TARGET}/jruby-1.7.20/jruby-bin-1.7.20.tar.gz -C jruby --strip-components=1 jruby-1.7.20/bin jruby-1.7.20/lib
+popd
+
+export PATH=$PATH:${BOSH_INSTALL_TARGET}/jruby/bin:${BOSH_INSTALL_TARGET}/jdk/bin
+
+jgem install jruby-1.7.20/bundler-1.9.6.gem --no-ri --no-rdoc

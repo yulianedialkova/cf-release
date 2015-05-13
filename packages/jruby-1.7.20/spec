@@ -1,0 +1,6 @@
+---
+name: jruby-1.7.20
+files:
+- jruby-1.7.20/jruby-bin-1.7.20.tar.gz
+- jruby-1.7.20/bundler-1.9.6.gem
+- java/openjdk-1.7.0_79.tar.gz

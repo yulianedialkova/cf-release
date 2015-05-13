@@ -1,5 +1,6 @@
 update:
   canaries: 0
+  serial: false
 
 # Basically disables the jobs from second availability zone (z2) not necessary in a dev setup
 jobs:
@@ -35,7 +36,7 @@ jobs:
 #    instances: 0
 
   - name: stats_z1
-    instances: 0
+    instances: 1
 
   - name: uaa_z2
     instances: 0
@@ -61,3 +62,7 @@ jobs:
 properties:
   ssl:
     skip_cert_verify: true
+
+  cc:
+    system_buildpacks: []
+    install_buildpacks: []

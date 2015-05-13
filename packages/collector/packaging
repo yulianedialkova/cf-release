@@ -1,7 +1,9 @@
 set -e -x
 
+export PATH=$PATH:/var/vcap/packages/jruby-1.7.20/jruby/bin:/var/vcap/packages/jruby-1.7.20/jdk/bin
+
 cp -a collector/* ${BOSH_INSTALL_TARGET}
 
 cd ${BOSH_INSTALL_TARGET}
 
-/var/vcap/packages/ruby-2.1.6/bin/bundle install --local --deployment --without development test
+jruby -S bundle install --local --deployment --without development test

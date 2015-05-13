@@ -1,5 +1,9 @@
 set -e -x
 
-cd ${BUILD_DIR}/collector
-BUNDLE_WITHOUT=development:test bundle package --all
+tar zxvf jruby-1.7.20/jruby-bin-1.7.20.tar.gz jruby-1.7.20/bin/* jruby-1.7.20/lib/*
+export PATH=$PATH:${BUILD_DIR}/jruby-1.7.20/bin
 
+cd ${BUILD_DIR}/collector
+BUNDLE_WITHOUT=development:test jruby -S bundle package --all
+
+rm -rf ${BUILD_DIR}/jruby-1.7.20

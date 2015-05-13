@@ -1,8 +1,10 @@
 ---
 name: collector
 dependencies:
-- ruby-2.1.6
+- jruby-1.7.20
 files:
-- collector/{Rakefile,Gemfile,Gemfile.lock}
+- collector/{Gemfile,Gemfile.lock,.jrubyrc}
 - collector/bin/collector
+- collector/vendor/**/*
 - collector/lib/**/*
+- jruby-1.7.20/jruby-bin-1.7.20.tar.gz

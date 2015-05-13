@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-export PATH=/var/vcap/packages/ruby-2.1.6/bin:$PATH
+export PATH=/var/vcap/packages/jruby-1.7.20/jruby/bin:/var/vcap/packages/jruby-1.7.20/jdk/bin:$PATH
 
 RUN_DIR=/var/vcap/sys/run/collector
 LOG_DIR=/var/vcap/sys/log/collector
@@ -28,9 +28,7 @@ case $1 in
 
     cd /var/vcap/packages/collector
 
-    exec chpst -u vcap:vcap /var/vcap/packages/ruby-2.1.6/bin/ruby \
-         /var/vcap/packages/collector/bin/collector
-
+    exec chpst -u vcap:vcap jruby -J-Xmx<%= properties.collector.java_max_memory %>m /var/vcap/packages/collector/bin/collector
 
     ;;
 

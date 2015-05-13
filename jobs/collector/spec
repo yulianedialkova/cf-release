@@ -10,7 +10,7 @@ templates:
 packages:
 - common
 - collector
-- ruby-2.1.6
+- jruby-1.7.20
 
 properties:
   collector.aws.access_key_id:
@@ -60,6 +60,9 @@ properties:
   collector.use_graphite:
     description: "enable Graphite plugin"
     default: false
+  collector.java_max_memory:
+    description: "Xmx for the JVM in megabytes"
+    default: 512
   collector.graphite.address:
     description: "IP address of Graphite"
   collector.graphite.port:
