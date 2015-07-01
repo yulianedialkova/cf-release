@@ -1,0 +1,67 @@
+#!/bin/bash -e
+# vim: set ft=sh
+
+LOG_DIR=/var/vcap/sys/log/skydns
+RUN_DIR=/var/vcap/sys/run/skydns
+DATA_DIR=/var/vcap/store/skydns
+CONF_DIR=/var/vcap/jobs/skydns/config
+PIDFILE=$RUN_DIR/skydns.pid
+
+PKG=/var/vcap/packages/skydns
+
+source /var/vcap/packages/common/utils.sh
+
+mkdir -p /var/vcap/sys/log/monit
+exec 1>> /var/vcap/sys/log/monit/skydns.out.log
+exec 2>> /var/vcap/sys/log/monit/skydns.err.log
+
+case $1 in
+  start)
+    pid_guard $PIDFILE "skydns"
+    mkdir -p $LOG_DIR
+    chown -R vcap:vcap $LOG_DIR
+
+    mkdir -p $RUN_DIR
+    chown -R vcap:vcap $RUN_DIR
+
+    mkdir -p $DATA_DIR
+    chown -R vcap:vcap $DATA_DIR
+
+    # here we want to create the service with a curl?
+    # need local IP address
+    # need machine index (bosh index?)
+    # need to get machine ID
+
+#    curl -XPUT http://$curl_id/v2/keys/skydns/$service_name/x$service_offset -d \
+#      value='{"host":$my_ip, "port":$my_service_port}'
+
+    # "SKYDNS uses a significant amount of virtual memory, since LMDB uses
+    # mmap() underneath. It uses about 700MB of a 32bit system and 40GB on a
+    # 64bit system."
+    #
+    # this mainly applies to bosh-lite
+    ulimit -v unlimited
+
+    # add skydns agent's dns to resolv.conf
+    #
+    # /etc/resolv.conf will probably be regenerated all the time, so add the
+    # local dns server to /head, which will be prepended when regenerated.
+
+    echo $$ > $PIDFILE
+
+    exec chpst -u vcap:vcap $PKG/bin/skydns \
+      -machines="<%= p("etcd.machines").map { |addr| "http://" + addr + ":4001" }.join(',') %>" \
+      -addr=<%= p("skydns.dns_addr") %> \
+      2> >(tee -a ${LOG_DIR}/skydns.stderr.log | logger -p user.error -t vcap.skydns) \
+      1> >(tee -a ${LOG_DIR}/skydns.stdout.log | logger -p user.info  -t vcap.skydns)
+
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+    ;;
+esac

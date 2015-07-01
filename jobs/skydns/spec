@@ -1,0 +1,17 @@
+---
+name: skydns
+
+templates:
+  skydns_ctl.sh.erb: bin/skydns_ctl
+
+packages:
+  - skydns
+
+properties:
+  skydns.dns_addr:
+    description: "DNS Address and port to listen on"
+    default: 127.0.0.1.53
+  etcd.machines:
+    description: "The list of etcd machines"
+  skydns.service.name:
+    description: "Name of the service to register (service.etcd.??)"

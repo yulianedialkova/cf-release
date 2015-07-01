@@ -1,0 +1,7 @@
+---
+name: skydns
+
+dependencies: []
+
+files:
+  - skydns/skydns
