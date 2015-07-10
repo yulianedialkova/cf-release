@@ -51,6 +51,11 @@
     else
       config["bootstrap_expect"] = lan_servers.size
     end
+    config["watches"] = {
+      "type" => "service",
+      "service" => "consul",
+      "handler" => "/var/vcap/jobs/consul_agent/bin/consul-service-handler.sh"
+    }
   end
 
   if lan_servers

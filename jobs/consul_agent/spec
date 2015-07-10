@@ -5,6 +5,7 @@ templates:
   agent_ctl.sh.erb: bin/agent_ctl
   join_ctl.sh.erb: bin/join_ctl
   config.json.erb: config/config.json
+  consul_service_handler.sh.erb: consul_service_handler.sh 
 
 packages:
   - consul
