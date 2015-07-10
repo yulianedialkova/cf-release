@@ -1,0 +1,563 @@
+name: (( iaas_settings.environment ))
+
+compilation:
+  workers: 6
+  network: cf1
+  reuse_compilation_vms: true
+  cloud_properties: (( iaas_settings.compilation_cloud_properties ))
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  canary_watch_time: 30000-600000
+  update_watch_time: 5000-600000
+  serial: true
+
+networks:
+  - name: cf1
+    type: manual
+    subnets: (( iaas_settings.subnet_configs.cf1.subnets ))
+  - name: cf2
+    type: manual
+    subnets: (( iaas_settings.subnet_configs.cf2.subnets ))
+
+resource_pools:
+  - name: small_z1
+    network: cf1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.small_z1.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.small_z1.env || meta.default_env ))
+
+  - name: small_z2
+    network: cf2
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.small_z2.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.small_z2.env || meta.default_env ))
+
+  - name: medium_z1
+    network: cf1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.medium_z1.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.medium_z1.env || meta.default_env ))
+
+  - name: medium_z2
+    network: cf2
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.medium_z2.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.medium_z2.env || meta.default_env ))
+
+  - name: large_z1
+    network: cf1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.large_z1.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.large_z1.env || meta.default_env ))
+
+  - name: large_z2
+    network: cf2
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.large_z2.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.large_z2.env || meta.default_env ))
+
+  - name: runner_z1
+    network: cf1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.runner_z1.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.runner_z1.env || meta.default_env ))
+
+  - name: runner_z2
+    network: cf2
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.runner_z2.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.runner_z2.env || meta.default_env ))
+
+  - name: router_z1
+    network: cf1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.router_z1.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.router_z1.env || meta.default_env ))
+
+  - name: router_z2
+    network: cf2
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.router_z2.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.router_z2.env || meta.default_env ))
+
+  - name: small_errand
+    network: cf1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.small_z1.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.small_z1.env || meta.default_env ))
+
+  - name: xlarge_errand
+    network: cf1
+    stemcell: (( iaas_settings.stemcell ))
+    cloud_properties: (( iaas_settings.resource_pool_cloud_properties.large_z1.cloud_properties ))
+    env: (( iaas_settings.resource_pool_envs.large_z1.env || meta.default_env ))
+
+jobs:
+  - name: consul_z1
+    templates: (( base_job_templates.consul addiction_jobs.consul ))
+    instances: 0
+    persistent_disk: 1024
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+        static_ips: (( merge ))
+    update:
+      serial: true
+      max_in_flight: 1
+    properties:
+      consul:
+        agent:
+          mode: server
+      metron_agent:
+        zone: z1
+
+  - name: consul_z2
+    templates: (( base_job_templates.consul addiction_jobs.consul ))
+    instances: 0
+    persistent_disk: 1024
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+        static_ips: (( merge )) #we don't know how to do this yet, we'll figure it out
+    update:
+      serial: true
+      max_in_flight: 1
+    properties:
+      consul:
+        agent:
+          mode: server
+      metron_agent:
+        zone: z2
+
+  - name: ha_proxy_z1
+    templates: (( merge || meta.ha_proxy_templates ))
+    instances: 0
+    resource_pool: router_z1
+    default_networks:
+      - name: cf1
+        static_ips: ~
+    networks: (( merge || default_networks ))
+    properties:
+      networks: (( meta.networks.z1 ))
+      ha_proxy:
+        ssl_pem: ~
+        disable_http: false
+        ssl_ciphers: ~
+      router:
+        servers:
+          z1: (( jobs.router_z1.networks.cf1.static_ips ))
+          z2: (( jobs.router_z2.networks.cf2.static_ips ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: nats_z1
+    templates: (( merge || meta.nats_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: nats_z2
+    templates: (( merge || meta.nats_templates ))
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+    update: (( merge || empty_hash ))
+
+  - name: etcd_z1
+    templates: (( merge || meta.etcd_templates ))
+    instances: 2
+    persistent_disk: 10024
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: etcd_z2
+    templates: (( merge || meta.etcd_templates ))
+    instances: 1
+    persistent_disk: 10024
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+    update: (( merge || empty_hash ))
+
+  - name: stats_z1
+    templates: (( merge || meta.stats_templates ))
+    instances: 1
+    resource_pool: small_z1
+    networks:
+      - name: cf1
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: nfs_z1
+    templates: (( merge || meta.nfs_templates ))
+    instances: 0
+    resource_pool: medium_z1
+    persistent_disk: 102400
+    networks:
+      - name: cf1
+        static_ips: ~
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: postgres_z1
+    templates: (( merge || meta.postgres_templates ))
+    instances: 0
+    resource_pool: medium_z1
+    persistent_disk: 4096
+    networks:
+    - name: cf1
+      static_ips: ~
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: uaa_z1
+    templates: (( merge || meta.uaa_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+    properties:
+      consul:
+        agent:
+          services:
+            uaa: {}
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: uaa_z2
+    templates: (( merge || meta.uaa_templates ))
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+    properties:
+      consul:
+        agent:
+          services:
+            uaa: {}
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+    update: (( merge || empty_hash ))
+
+  - name: login_z1
+    templates: (( merge || meta.login_templates ))
+    instances: 0
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: login_z2
+    templates: (( merge || meta.login_templates ))
+    instances: 0
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+    properties:
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+    update: (( merge || empty_hash ))
+
+  - name: api_z1
+    templates: (( merge || meta.api_templates ))
+    instances: 1
+    resource_pool: large_z1
+    persistent_disk: 0
+    networks:
+      - name: cf1
+    properties:
+      consul:
+        agent:
+          services:
+            cloud_controller_ng: {}
+            routing-api: {}
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+      nfs_server: (( meta.nfs_server ))
+    update: (( merge || empty_hash ))
+
+  - name: api_z2
+    templates: (( merge || meta.api_templates ))
+    instances: 1
+    resource_pool: large_z2
+    persistent_disk: 0
+    networks:
+      - name: cf2
+    properties:
+      consul:
+        agent:
+          services:
+            cloud_controller_ng: {}
+            routing-api: {}
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+      nfs_server: (( meta.nfs_server ))
+    update: (( merge || empty_hash ))
+
+  - name: clock_global
+    templates: (( merge || meta.clock_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    persistent_disk: 0
+    networks:
+      - name: cf1
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: api_worker_z1
+    templates: (( merge || meta.api_worker_templates ))
+    instances: 1
+    resource_pool: small_z1
+    persistent_disk: 0
+    networks:
+      - name: cf1
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+      nfs_server: (( meta.nfs_server ))
+    update: (( merge || empty_hash ))
+
+  - name: api_worker_z2
+    templates: (( merge || meta.api_worker_templates ))
+    instances: 1
+    resource_pool: small_z2
+    persistent_disk: 0
+    networks:
+      - name: cf2
+    properties:
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+      nfs_server: (( meta.nfs_server ))
+    update: (( merge || empty_hash ))
+
+  - name: hm9000_z1
+    templates: (( merge || meta.hm9000_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+    properties:
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: hm9000_z2
+    templates: (( merge || meta.hm9000_templates ))
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+    properties:
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+    update: (( merge || empty_hash ))
+
+  - name: runner_z1
+    templates: (( merge || meta.dea_templates ))
+    instances: 1
+    resource_pool: runner_z1
+    networks:
+      - name: cf1
+        static_ips: ~
+    properties:
+      dea_next:
+        zone: (( merge || "z1" ))
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update:
+      max_in_flight: 1
+
+  - name: runner_z2
+    templates: (( merge || meta.dea_templates ))
+    instances: 1
+    resource_pool: runner_z2
+    networks:
+      - name: cf2
+        static_ips: ~
+    properties:
+      dea_next:
+        zone: (( merge || "z2" ))
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+    update:
+      max_in_flight: 1
+
+  - name: loggregator_z1
+    templates: (( merge || lamb_meta.loggregator_templates ))
+    instances: 0
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+    properties:
+      <<: (( merge ))
+      networks: (( meta.networks.z1 ))
+    update: (( merge || empty_hash ))
+
+  - name: loggregator_z2
+    templates: (( merge || lamb_meta.loggregator_templates ))
+    instances: 0
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+    properties:
+      <<: (( merge ))
+      networks: (( meta.networks.z2 ))
+    update: (( merge || empty_hash ))
+
+  - name: doppler_z1
+    templates: (( merge || lamb_meta.loggregator_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    networks:
+      - name: cf1
+    properties:
+      <<: (( merge ))
+      networks: (( meta.networks.z1 ))
+    update: (( merge || empty_hash ))
+
+  - name: doppler_z2
+    templates: (( merge || lamb_meta.loggregator_templates ))
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: cf2
+    properties:
+      <<: (( merge ))
+      networks: (( meta.networks.z2 ))
+    update: (( merge || empty_hash ))
+
+  - name: loggregator_trafficcontroller_z1
+    templates: (( merge || lamb_meta.loggregator_trafficcontroller_templates ))
+    instances: 1
+    resource_pool: small_z1
+    networks:
+      - name: cf1
+    properties:
+      <<: (( merge ))
+      networks: (( meta.networks.z1 ))
+    update: (( merge || empty_hash ))
+
+  - name: loggregator_trafficcontroller_z2
+    templates: (( merge || lamb_meta.loggregator_trafficcontroller_templates ))
+    instances: 1
+    resource_pool: small_z2
+    networks:
+      - name: cf2
+    properties:
+      <<: (( merge ))
+      networks: (( meta.networks.z2 ))
+    update: (( merge || empty_hash ))
+
+  - name: router_z1
+    templates: (( merge || meta.router_templates ))
+    instances: 1
+    resource_pool: router_z1
+    networks:
+      - name: cf1
+        static_ips: (( merge ))
+    properties:
+      consul:
+        agent:
+          services:
+            gorouter: {}
+      networks: (( meta.networks.z1 ))
+      metron_agent:
+        zone: z1
+    update: (( merge || empty_hash ))
+
+  - name: router_z2
+    templates: (( merge || meta.router_templates ))
+    instances: 1
+    resource_pool: router_z2
+    networks:
+      - name: cf2
+        static_ips: (( merge ))
+    properties:
+      consul:
+        agent:
+          services:
+            gorouter: {}
+      networks: (( meta.networks.z2 ))
+      metron_agent:
+        zone: z2
+    update: (( merge || empty_hash ))
+
+  - name: acceptance_tests
+    templates:
+    - name: acceptance-tests
+      release: (( meta.release.name ))
+    instances: 1
+    resource_pool: small_errand
+    lifecycle: errand
+    networks:
+      - name: cf1
+
+  - name: smoke_tests
+    templates:
+    - name: smoke-tests
+      release: (( meta.release.name ))
+    instances: 0
+    resource_pool: small_errand
+    lifecycle: errand
+    networks:
+      - name: cf1
+    properties:
+      networks: (( meta.networks.z1 ))
+
+
