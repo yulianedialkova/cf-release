@@ -8,6 +8,9 @@ CONF_DIR=/var/vcap/jobs/consul_agent/config
 
 PKG=/var/vcap/packages/consul
 
+PID_FILE=$RUN_DIR/consul_agent.pid
+NODE_NAME="#{name.gsub('_', '-')}-#{spec.index}"
+
 mkdir -p /var/vcap/sys/log/monit
 exec 1>> /var/vcap/sys/log/monit/consul_agent.out.log
 exec 2>> /var/vcap/sys/log/monit/consul_agent.err.log
@@ -75,11 +78,35 @@ EOF
 
     export GOMAXPROCS
 
-    exec chpst -u vcap:vcap $PKG/bin/consul agent \
-      -pid-file=${RUN_DIR}/consul_agent.pid \
+    chpst -u vcap:vcap $PKG/bin/consul agent \
       -config-dir=$CONF_DIR \
       2> >(tee -a ${LOG_DIR}/consul_agent.stderr.log | logger -p user.error -t vcap.consul-agent) \
-      1> >(tee -a ${LOG_DIR}/consul_agent.stdout.log | logger -p user.info  -t vcap.consul-agent)
+      1> >(tee -a ${LOG_DIR}/consul_agent.stdout.log | logger -p user.info  -t vcap.consul-agent) &
+
+    consul_pid=$!
+
+    echo "Consul pid is " + $consul_pid
+
+    sleep 2
+
+    echo "After sleep"
+
+    notsynched=true
+
+    while $notsynched; do
+      input=$($PKG/bin/consul watch -service=consul -type=service)
+      echo "input is " + $input
+      output=$(echo $input | $PKG/bin/jq 'map(select(.Node.Node == "$NODE_NAME")) | .[0].Service.Tags' || true)
+      echo $output
+      if [ "$output" == "[]" ]; then
+          echo "Now it's synched!!"
+          notsynched=false
+      fi
+      sleep 1
+    done
+
+    echo ${consul_pid} > $PID_FILE
+    wait ${etcd_pid}
 
     ;;
 
