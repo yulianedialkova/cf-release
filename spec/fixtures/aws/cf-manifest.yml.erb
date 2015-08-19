@@ -283,9 +283,15 @@ jobs:
       - null
       - null
       share: null
+    route_registrar:
+      routes:
+        "9022":
+        - api.example.com
   resource_pool: large_z1
   templates:
   - name: cloud_controller_ng
+    release: cf
+  - name: route_registrar
     release: cf
   - name: routing-api
     release: cf
@@ -319,9 +325,15 @@ jobs:
       - null
       - null
       share: null
+    route_registrar:
+      routes:
+        "9022":
+        - api.example.com
   resource_pool: large_z2
   templates:
   - name: cloud_controller_ng
+    release: cf
+  - name: route_registrar
     release: cf
   - name: routing-api
     release: cf
@@ -974,6 +986,10 @@ properties:
     - null
     share: null
   request_timeout_in_seconds: 900
+  route_registrar:
+    api_endpoint: http://routing-api.example.com
+    api_password: gorouter_secret
+    api_username: gorouter
   router:
     enable_ssl: true
     ssl_cert: |
