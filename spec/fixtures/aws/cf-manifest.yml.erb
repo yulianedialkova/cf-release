@@ -219,6 +219,54 @@ jobs:
     release: cf
   update: {}
 - instances: 1
+  name: router_z1
+  networks:
+  - name: cf1
+    static_ips:
+    - 0.0.0.5
+  properties:
+    consul:
+      agent:
+        services:
+          gorouter: {}
+    metron_agent:
+      zone: z1
+    networks:
+      apps: cf1
+  resource_pool: router_z1
+  templates:
+  - name: gorouter
+    release: cf
+  - name: metron_agent
+    release: cf
+  - name: consul_agent
+    release: cf
+  update: {}
+- instances: 1
+  name: router_z2
+  networks:
+  - name: cf2
+    static_ips:
+    - 0.0.1.5
+  properties:
+    consul:
+      agent:
+        services:
+          gorouter: {}
+    metron_agent:
+      zone: z2
+    networks:
+      apps: cf2
+  resource_pool: router_z2
+  templates:
+  - name: gorouter
+    release: cf
+  - name: metron_agent
+    release: cf
+  - name: consul_agent
+    release: cf
+  update: {}
+- instances: 1
   name: uaa_z1
   networks:
   - name: cf1
