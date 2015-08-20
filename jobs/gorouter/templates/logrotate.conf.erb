@@ -2,7 +2,7 @@
   rotate = properties.router.logrotate && properties.router.logrotate.rotate
   size = properties.router.logrotate && properties.router.logrotate.size
 %>
-/var/vcap/sys/log/gorouter/gorouter*.log {
+/var/vcap/data/sys/log/gorouter/*.log /var/vcap/data/sys/log/gorouter/*/*.log {
   missingok
   rotate <%= rotate || 7 %>
   compress
