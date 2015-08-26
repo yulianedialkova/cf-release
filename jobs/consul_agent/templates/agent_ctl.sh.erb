@@ -1,6 +1,8 @@
 #!/bin/bash -e
 # vim: set ft=sh
 
+set -x
+
 LOG_DIR=/var/vcap/sys/log/consul_agent
 RUN_DIR=/var/vcap/sys/run/consul_agent
 DATA_DIR=/var/vcap/store/consul_agent
@@ -83,9 +85,6 @@ EOF
     expected=<%=p("consul.agent.servers.lan").size%>
     consul_join="<%=p("consul.agent.servers.lan").join(' ')%>"
     server=<%=p("consul.agent.mode") == "server"%>
-    if [ "$server" == "true" ]; then
-      actual=$(/var/vcap/packages/consul/bin/consul members -status=alive | grep server | wc -l)
-    fi
 
     setcap cap_net_bind_service=+ep $PKG/bin/consul
 
@@ -106,8 +105,9 @@ EOF
     echo "Consul pid is " + $consul_pid
 
     start=0
-    synced=false
+    synced=true
     if [ $expected -gt 0 ]; then
+      synced=false
       consul_server_ips="<%=p("consul.agent.servers.lan").join('\\|')%>"
       for i in $(seq <%= p("consul.agent.sync_timeout_in_seconds") %>); do
         echo "$(date)" "Waiting to have joined one of: ${consul_join}"
@@ -121,19 +121,45 @@ EOF
       done
     fi
 
-    if [[ "$server" == "true" && $actual -eq $((expected - 1)) ]]; then
+    if [ "$server" == "true" ]; then
+      actual=$(/var/vcap/packages/consul/bin/consul members -status=alive | grep server | wc -l)
+    fi
+
+    # only the last member of the cluster waits for leader election
+    if [[ "$server" == "true" && $actual -eq $expected ]]; then
       synced=false
       for i in $(seq $start <%= p("consul.agent.sync_timeout_in_seconds") %>); do
-        if curl -s 'http://127.0.0.1:8500/v1/health/service/consul' | grep -oP "\{\"Node\":\"$NODE_NAME\".*?}]" | grep '"Tags":\[\]'; then
+        info=$(/var/vcap/packages/consul/bin/consul info)
+        commit_index=$(echo $info | grep -o "commit_index = [0-9]\+" | cut -d "=" -f2 | tr -d " ")
+        last_log_index=$(echo $info | grep -o "last_log_index = [0-9]\+" | cut -d "=" -f2 | tr -d " ")
+        echo "commit_index: $commit_index"
+        echo "last_log_index: $last_log_index"
+        if [[ $commit_index -ne 0 && $last_log_index -eq $commit_index ]]; then
           synced=true
           break
         fi
         sleep 1
       done
+
+      leader=$(curl -s http://127.0.0.1:8500/v1/status/leader)
+
+      if [ "$leader" == '""' ]; then
+      echo "$(date) No leader found"
+        synced=false
+      fi
     fi
+
 
     if ${synced}; then
       echo "$(date) Consul is synced"
+
+      if [ "$server" == "true" ]; then
+        existing=$(/var/vcap/packages/consul/bin/consul keyring -list)
+        <% p("consul.encrypt_keys").each do |encrypt_key| %>
+          /var/vcap/packages/consul/bin/consul keyring -install='<%= encrypt_key %>'
+        <% end %>
+        /var/vcap/packages/consul/bin/consul keyring -use='<%= p("consul.encrypt_keys").first %>'
+      fi
     else
       echo "$(date) Consul failed to sync"
       if ! $PKG/bin/consul leave; then
