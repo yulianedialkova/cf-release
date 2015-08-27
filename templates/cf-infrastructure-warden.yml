@@ -235,7 +235,9 @@ properties:
     skip_ssl_validation: true
 
   consul:
-    encrypt_keys: [Atzo3VBv+YVDzQAzlQRPRA==]
+    encrypt_keys:
+      - 8b9IJjXH5aN2Z9A5H8HAmg==
+      - XWv245BqELvJXBAS+WCVbg==
     require_ssl: true
     ca_cert: |
       -----BEGIN CERTIFICATE-----

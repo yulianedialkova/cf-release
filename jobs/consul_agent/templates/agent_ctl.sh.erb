@@ -20,6 +20,16 @@ mkdir -p /var/vcap/sys/log/monit
 exec 1>> /var/vcap/sys/log/monit/consul_agent.out.log
 exec 2>> /var/vcap/sys/log/monit/consul_agent.err.log
 
+stop_consul() {
+  echo "$(date) Consul failed to start"
+  consul_pid=$1
+  if ! $PKG/bin/consul leave; then
+    kill ${consul_pid} || true
+  fi
+
+  wait ${consul_pid}
+}
+
 case $1 in
   start)
 
@@ -95,12 +105,18 @@ EOF
 
     export GOMAXPROCS
 
+    if [ "$server" != "true" ]; then
+      rm -f $DATA_DIR/serf/local.keyring
+    fi
+
     chpst -u vcap:vcap $PKG/bin/consul agent \
       -config-dir=$CONF_DIR \
       2> >(tee -a ${LOG_DIR}/consul_agent.stderr.log | logger -p user.error -t vcap.consul-agent) \
       1> >(tee -a ${LOG_DIR}/consul_agent.stdout.log | logger -p user.info  -t vcap.consul-agent) &
 
     consul_pid=$!
+
+    trap "stop_consul $consul_pid" ERR
 
     echo "Consul pid is " + $consul_pid
 
@@ -122,14 +138,14 @@ EOF
     fi
 
     if [ "$server" == "true" ]; then
-      actual=$(/var/vcap/packages/consul/bin/consul members -status=alive | grep server | wc -l)
+      actual=$($PKG/bin/consul members -status=alive | grep server | wc -l)
     fi
 
     # only the last member of the cluster waits for leader election
     if [[ "$server" == "true" && $actual -eq $expected ]]; then
       synced=false
       for i in $(seq $start <%= p("consul.agent.sync_timeout_in_seconds") %>); do
-        info=$(/var/vcap/packages/consul/bin/consul info)
+        info=$($PKG/bin/consul info)
         commit_index=$(echo $info | grep -o "commit_index = [0-9]\+" | cut -d "=" -f2 | tr -d " ")
         last_log_index=$(echo $info | grep -o "last_log_index = [0-9]\+" | cut -d "=" -f2 | tr -d " ")
         echo "commit_index: $commit_index"
@@ -144,29 +160,29 @@ EOF
       leader=$(curl -s http://127.0.0.1:8500/v1/status/leader)
 
       if [ "$leader" == '""' ]; then
-      echo "$(date) No leader found"
+        echo "$(date) No leader found"
         synced=false
       fi
     fi
 
-
     if ${synced}; then
       echo "$(date) Consul is synced"
 
-      if [ "$server" == "true" ]; then
-        existing=$(/var/vcap/packages/consul/bin/consul keyring -list)
-        <% p("consul.encrypt_keys").each do |encrypt_key| %>
-          /var/vcap/packages/consul/bin/consul keyring -install='<%= encrypt_key %>'
-        <% end %>
-        /var/vcap/packages/consul/bin/consul keyring -use='<%= p("consul.encrypt_keys").first %>'
-      fi
+      <% if !p("consul.encrypt_keys").nil? && !p("consul.encrypt_keys").empty? %>
+        if [ "$server" == "true" ]; then
+          extrakeys=$($PKG/bin/consul keyring -list | grep -oP '[^\s]{24}' | sort -u | awk '{ print $1 }' | grep -v '<%= p("consul.encrypt_keys").join('\\|') %> | cat')
+          <% p("consul.encrypt_keys").each do |encrypt_key| %>
+            $PKG/bin/consul keyring -install='<%= encrypt_key %>'
+          <% end %>
+          $PKG/bin/consul keyring -use='<%= p("consul.encrypt_keys").first %>'
+          for toremove in $extrakeys ; do
+            $PKG/bin/consul keyring -remove="$toremove"
+          done
+        fi
+      <% end %>
     else
       echo "$(date) Consul failed to sync"
-      if ! $PKG/bin/consul leave; then
-        kill ${consul_pid} || true
-      fi
-
-      wait ${consul_pid}
+      stop_consul $consul_pid
       exit 1
     fi
 
