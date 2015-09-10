@@ -1,0 +1,5 @@
+check process tcp_fixer
+  with pidfile /var/vcap/sys/run/tcp_fixer/tcp_fixer.pid
+  start program "/var/vcap/jobs/tcp_fixer/bin/tcp_fixer_ctl start"
+  stop program "/var/vcap/jobs/tcp_fixer/bin/tcp_fixer_ctl stop"
+  group vcap
