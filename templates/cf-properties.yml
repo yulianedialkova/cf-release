@@ -33,9 +33,6 @@ properties:
   app_ssh: ~
   domain: (( merge ))
 
-  loggregator_endpoint:
-    shared_secret: (( merge ))
-
   cc:
     jobs:
       global:
