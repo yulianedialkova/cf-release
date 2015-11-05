@@ -1,6 +1,4 @@
 ---
 name: debian_nfs_server
 files:
-- debian_nfs_server/rpcbind_0.2.1-6+deb8u1_amd64.deb
-- debian_nfs_server/nfs-common_1.2.8-9_amd64.deb
 - debian_nfs_server/nfs-kernel-server_1.2.8-9_amd64.deb
