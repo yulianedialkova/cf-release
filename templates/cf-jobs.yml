@@ -681,6 +681,14 @@ properties:
   loggregator_endpoint:
     shared_secret: (( merge ))
 
+  doppler:
+    <<: (( merge ))
+    shared_secret: (( .properties.loggregator_endpoint.shared_secret ))
+
+  metron_agent:
+    <<: (( merge ))
+    shared_secret: (( .properties.loggregator_endpoint.shared_secret ))
+
   doppler_endpoint:
     shared_secret: (( .properties.loggregator_endpoint.shared_secret ))
 
