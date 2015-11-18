@@ -163,3 +163,15 @@ rootfs/cflinuxfs2-1.18.0.tar.gz:
   object_id: cd8eefd1-02d2-4524-87bc-293f43f3aa5b
   sha: c9d9ec2fe9ce97f9cc21b2ff5e283353b77044a6
   size: 258176308
+openjdk/openjdk-1.8.0_65-mountainlion.tar.gz:
+  object_id: 108b6fbe-d77a-42e6-a07d-f1fe0c7a3542
+  sha: 0d0fef95aa7bdd494f8aac2fa4d94f84b2b3ee9d
+  size: 81922523
+openjdk/openjdk-1.8.0_65-trusty-jre.tar.gz:
+  object_id: 84248d2e-8f3e-40e2-8eee-d3924827532e
+  sha: e5ecfe29a74bca1794eb18de03f2f98495c5cbc0
+  size: 77054579
+openjdk/openjdk-1.8.0_65-trusty.tar.gz:
+  object_id: 03592bc2-d644-4a26-b83c-41087431c3c9
+  sha: 949812223e334ba6c360a097a44084776eaee418
+  size: 77611856
