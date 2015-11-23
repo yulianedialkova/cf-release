@@ -1,0 +1,36 @@
+#!/bin/bash
+
+SCRIPTS_DIR="$(dirname $0)"
+package_name="${1}"
+filter="${2}"
+release_dir="${3}"
+
+echo "This will symlink the following submodules:"
+cat "${SCRIPTS_DIR}/../packages/${package_name}/spec" \
+  | grep "${filter}" \
+  | cut -d' ' -f4 \
+  | xargs -n 1 dirname \
+  | tr '/' ' ' \
+  | awk '{print $1"/"$2"/"$3}' \
+  | sort \
+  | uniq
+
+read -p "Continue? (NO/yes): " yes
+if [[ "$yes" != "yes" ]]; then
+  echo "Goodbye"
+  exit 0
+fi
+
+cat "${SCRIPTS_DIR}/../packages/${package_name}/spec" \
+  | grep "${filter}" \
+  | cut -d' ' -f4 \
+  | xargs -n 1 dirname \
+  | tr '/' ' ' \
+  | awk '{print $1"/"$2"/"$3}' \
+  | sort \
+  | uniq \
+  | while read -r pkg; do
+      pushd "$(dirname $pkg)" > /dev/null
+        ln -s "../../${release_dir}/src/$pkg"
+      popd > /dev/null
+    done

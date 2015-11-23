@@ -163,3 +163,7 @@ rootfs/cflinuxfs2-1.19.0.tar.gz:
   object_id: fdff7018-64bd-42a2-a9f1-dcf58e199d26
   sha: b4b94b5869f47bc16028c9fe22505a7449701784
   size: 258180562
+golang/go1.5.1.linux-amd64.tar.gz:
+  object_id: b87824d1-c93b-4298-a216-b6bc34527f52
+  sha: 46eecd290d8803887dec718c691cc243f2175fe0
+  size: 77875767
