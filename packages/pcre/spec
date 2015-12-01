@@ -1,0 +1,4 @@
+---
+name: pcre
+files:
+  - pcre/pcre-8.37.tar.gz

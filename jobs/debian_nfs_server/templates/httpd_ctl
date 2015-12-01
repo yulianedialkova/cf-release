@@ -1,0 +1,61 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run
+PIDFILE=$RUN_DIR/httpd.pid
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+
+  start)
+
+#    gzip -d /var/vcap/packages/httpd/httpd-2.4.17.tar.gz
+#    tar xvf /var/vcap/packages/httpd/httpd-2.4.17.tar
+#
+#    gzip -d /var/vcap/packages/pcre/pcre-8.37.tar.gz
+#    tar xvf /var/vcap/packages/pcre/pcre-8.37.tar
+#    cd pcre-8.37
+#    ./configure --prefix=/usr/local/pcre
+#    make
+#    make install
+#
+#    cd /var/vcap/packages/httpd/httpd-2.4.17
+#    rm -rf /var/vcap/packages/httpd/httpd-2.4.17/srclib/apr
+#    gzip -d /var/vcap/packages/apr/apr-1.5.2.tar.gz
+#    tar xvf /var/vcap/packages/apr/apr-1.5.2.tar
+#    mv /var/vcap/packages/httpd/httpd-2.4.17/apr-1.5.2 /var/vcap/packages/httpd/httpd-2.4.17/srclib/apr
+#
+#    rm -rf /var/vcap/packages/httpd/httpd-2.4.17/srclib/apr-util
+#    gzip -d /var/vcap/packages/apr-util/apr-util-1.5.4.tar.gz
+#    tar xvf /var/vcap/packages/apr-util/apr-util-1.5.4.tar
+#    mv /var/vcap/packages/httpd/httpd-2.4.17/apr-util-1.5.4 /var/vcap/packages/httpd/httpd-2.4.17/srclib/apr-util
+#
+#    cd /var/vcap/packages/httpd/httpd-2.4.17
+#    ./configure --with-included-apr --with-pcre=/usr/local/pcre
+#
+#    make
+#    make install
+#
+#    /usr/local/apache2/bin/apachectl -k start
+#
+    apache2 start
+    pid_guard $PIDFILE "apache2"
+
+#
+#    sudo a2enmod dav
+#    sudo a2enmod dav_fs
+#    sudo service apache2 restart
+
+    ;;
+
+  stop)
+    apache2 stop
+    ;;
+
+  *)
+    echo "Usage: httpd_ctl {start|stop}"
+
+    ;;
+
+esac
+exit 0

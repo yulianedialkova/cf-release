@@ -1,0 +1,3 @@
+set -e -x
+
+cp -v apr/apr-1.5.2.tar.gz ${BOSH_INSTALL_TARGET}/
