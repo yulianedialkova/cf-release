@@ -42,6 +42,11 @@ prune_stale_droplets_interval: 30
 droplet_stale_threshold: 120
 publish_active_apps_interval: 0 # 0 means disabled
 
+access_log_syslog:
+  enabled: <%= p("router.access_log_syslog_enabled") %>
+  syslog: <%= p("router.access_log_syslog_syslog") %>
+  level: <%= p("router.access_log_syslog_level") %>
+
 <% if p("router.enable_routing_api") %>
 oauth:
   token_endpoint: http://uaa.service.cf.internal

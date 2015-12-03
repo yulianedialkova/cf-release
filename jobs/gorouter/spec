@@ -85,6 +85,15 @@ properties:
   router.logging_level:
     description: "Log level for router"
     default: "info"
+  router.access_log_syslog_enabled:
+    description: "Enable sending access logs to syslog"
+    default: false
+  router.access_log_syslog_syslog:
+    description: "Namespace to appear in the access logs in the syslog"
+    default: "vcap.gorouter.access_log"
+  router.access_log_syslog_level:
+    description: "Log level for access logs in the syslog"
+    default: "debug"
 
   nats.user:
     description:
@@ -117,7 +126,7 @@ properties:
   dropsonde.enabled:
     default: false
     description: "Enable the dropsonde emitter library"
-  
+
   uaa.clients.gorouter.secret:
     description: "Password for UAA client for the gorouter."
   uaa.port:
