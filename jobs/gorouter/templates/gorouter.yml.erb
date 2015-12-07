@@ -46,6 +46,7 @@ access_log_syslog:
   enabled: <%= p("router.access_log_syslog_enabled") %>
   syslog: <%= p("router.access_log_syslog_syslog") %>
   level: <%= p("router.access_log_syslog_level") %>
+  app_id_filter: <%= p("router.access_app_id_filter") %>
 
 <% if p("router.enable_routing_api") %>
 oauth:

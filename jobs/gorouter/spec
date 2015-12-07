@@ -94,6 +94,10 @@ properties:
   router.access_log_syslog_level:
     description: "Log level for access logs in the syslog"
     default: "debug"
+  router.access_app_id_filter:
+    description:
+      "empty - only records with empty app_id are sent to the syslog; non_empty - only records with non-empty app_id are sent to the syslog; all - all records are sent to the syslog"
+    default: "all"
 
   nats.user:
     description:
